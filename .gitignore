@@ -1,5 +1,7 @@
 # Images
 skin-detector/imagenes/
+digits/Images_CVL/
+digits/Images_MNIST/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
