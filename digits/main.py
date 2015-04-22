@@ -43,11 +43,11 @@ def get_dataset(feats_option, dataset_option, file_list):
     image = misc.imread(file_path)
     ##  get features
     if feats_option == 1:
-      img_feats = features.get_4c_feats(image)
+      img_feats = features.get_cc_feats(image, "4c")
     elif feats_option == 2:
-      img_feats = features.get_8c_feats(image)
+      img_feats = features.get_cc_feats(image, "8c")
     elif feats_option == 3:
-      img_feats = features.get_mixed_feats(image)
+      img_feats = features.get_cc_feats(image, "mixed")
     else:
       img_feats = features.get_hog_feats(image,bins,side_pixels_per_cell,side_cells_per_block)
     if feats is None:
@@ -81,7 +81,7 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")[0:200]
+    training_file_list = glob.glob("Images_MNIST/Train/*")[0:1000]
     testing_file_list = glob.glob("Images_MNIST/Test/*")[0:50]
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]
@@ -105,7 +105,7 @@ def main():
   X = training_feats
   y = training_classes
 
-  clf = SVC(kernel='rbf')
+  clf = SVC(kernel='linear')
   clf.fit(X, y)
 
 

@@ -1,15 +1,20 @@
 from skimage.feature import hog
 from skimage import color
 from skimage.transform import resize
-from skimage.filters import threshold_otsu
 import numpy as np
 
 # Returns a list with the histogram concatenation
 def get_cc_feats(image, cc_name):
-  height, width, channels = image.shape
-  # Use a threshold to get a binary image
-  threshold = 200 
-  bw_img = (color.rgb2gray(image) * 255) < threshold
+  if len(image.shape) == 3:
+    # Using CVL
+    height, width, channels = image.shape
+    # Use a threshold to get a binary image
+    threshold = 200 
+    bw_img = (color.rgb2gray(image) * 255) < threshold
+  else:
+    # Using MNIST
+    height, width = image.shape
+    bw_img = image < 200
 
   vertical_step = height / 3
   horizontal_step = width / 3
@@ -22,11 +27,11 @@ def get_cc_feats(image, cc_name):
       vertical_b = (i + 1) * vertical_step - 1
       horizontal_a = j * horizontal_step
       horizontal_b = (j + 1) * horizontal_step - 1
-      boxes.append(bw_img[vertical_a : vertical_b, horizontal_a : horizontal_b])
+      boxes.append(bw_img[vertical_a : vertical_b][horizontal_a : horizontal_b])
 
   # Get the histogram for each box and concatenate them
   img_hist = []
-  for box in range(len(boxes)):
+  for box in boxes:
     if (cc_name == "4c"):
       local_hist = local_4c_hist(box)
     elif (cc_name == "8c"):
@@ -34,7 +39,7 @@ def get_cc_feats(image, cc_name):
     else:
       local_hist = local_mixed_hist(box)
     # List concatenation
-    img_hist += local_hist
+    img_hist = img_hist + local_hist
   return img_hist
 
 def local_4c_hist(box):
@@ -59,8 +64,8 @@ def local_cc_hist(box, directions):
         # This is a black point
         point = [i, j]
         bin_number = 0
-        for i in range(directions):
-          if hit_4c(box, point, direction):
+        for i in range(len(directions)):
+          if hit_4c(box, point, directions[i]):
             bin_number += 2 ** i
         hist[bin_number] += 1
   return hist
@@ -124,6 +129,11 @@ def hit_8c(box, starting_point, direction):
       if current_point:
         return True
     return False
+
+def normalize(hist):
+  total = sum(hist)
+  for i in range(len(hist)):
+    hist[i] = hist[i] / total
 
 def in_limits(box, point):
   in_limits_rows = point[0] >= 0 and point[0] < len(box)
