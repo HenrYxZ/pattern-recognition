@@ -3,6 +3,9 @@ skin-detector/imagenes/
 digits/Images_CVL/
 digits/Images_MNIST/
 
+# IDES
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
