@@ -3,12 +3,14 @@ import features
 import glob
 from scipy import misc
 import re
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
+from sklearn.metrics import confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
 
 ###HOG OPTIONS
-bins = 4
-side_pixels_per_cell = 2
-side_cells_per_block = 1
+bins = 8
+side_pixels_per_cell = 7
+side_cells_per_block = 3
 
 
 def get_class_from_file_path(file_path, dataset_option):
@@ -27,24 +29,14 @@ def get_class_CVL(file_path):
 
 
 
-#0 MNIST
-#1 CVL
+#1 MNIST
+#2 CVL
 
 #0 train
 #1 test
 
-def get_file_list(dataset_option, train_or_test):
-  if dataset_option == 0 and train_or_test == 0:
-    return glob.glob('Images_MNIST/Train/*')
-  elif dataset_option == 0 and train_or_test == 1:
-    return glob.glob('Images_MNIST/Test/*')
-  elif dataset_option == 1 and train_or_test == 0:
-    return glob.glob('Images_CVL/train/*')
-  else:
-    return glob.glob('Images_CVL/test/*')
 
-
-def get_dataset(feats_option, dataset_option, train_or_test, file_list):
+def get_dataset(feats_option, dataset_option, file_list):
   feats = None
   classes = []
   for file_path in file_list:
@@ -61,11 +53,10 @@ def get_dataset(feats_option, dataset_option, train_or_test, file_list):
     if feats is None:
       feats = img_feats
     else:
-      training_feats = np.vstack((feats,img_feats))
+      feats = np.vstack((feats,img_feats))
 
-      classes.append(get_class_from_file_path(file_path, dataset_option))
-
-    return (feats, np.array(classes))
+    classes.append(get_class_from_file_path(file_path, dataset_option))
+  return feats, np.array(classes)
 
 ################################################################################
 #             MAIN
@@ -89,24 +80,59 @@ def main():
 
   dataset_option = input()
 
-  training_file_list = glob.glob("Images_CVL/train/*")[0:9]
-  testing_file_list = glob.glob("Images_CVL/test/*")
-  # training_file_list = glob.glob("Images_MNIST/Train/*")
-  # testing_file_list = glob.glob("Images_MNIST/Test/*")
-
+  if dataset_option == 1:
+    training_file_list = glob.glob("Images_MNIST/Train/*")[0:200]
+    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:50]
+  else :
+    training_file_list = glob.glob("Images_CVL/train/*")[0:200]
+    testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
 
   ##############################################################################
   ###########                      Training                          ###########
   ##############################################################################
 
-  training_feats, training_classes = get_dataset(training_file_list)
+  training_feats, training_classes = get_dataset(feats_option, dataset_option, training_file_list)
+
+  print(training_classes)
+
+  # print("training feats")
+  # print(training_feats.shape)
+  # print(training_feats)
+  # print("")
+  # print("training classes")
+  # print(training_classes.shape)
+  # print(training_classes)
+  X = training_feats
+  y = training_classes
+
+  clf = SVC(kernel='rbf')
+  clf.fit(X, y)
+
 
 
   ##############################################################################
   ###########                      Testing                           ###########
   ##############################################################################
 
-  testing_feats, testing_classes = get_dataset(training_file_list)
+  testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
+
+  X_test = testing_feats
+  y_test_true = testing_classes
+  y_test_predicted = clf.predict(X_test)
+
+  print("testing_classes")
+  print(testing_classes)
+
+  confusion = confusion_matrix(y_test_true, y_test_predicted)
+  accuracy = accuracy_score(y_test_true, y_test_predicted)
+  print("Accuracy = "),
+  print(accuracy)
+
+    # Show confusion matrix
+  plt.matshow(confusion)
+  plt.title('Confusion matrix')
+  plt.colorbar()
+  plt.show()
 
 if __name__ == '__main__':
   main()
