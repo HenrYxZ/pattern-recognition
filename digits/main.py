@@ -10,6 +10,13 @@ bins = 4
 side_pixels_per_cell = 2
 side_cells_per_block = 1
 
+
+def get_class_from_file_path(file_path, dataset_option):
+  if dataset_option == 1:
+    return get_class_MNIST(file_path)
+  else:
+    return get_class_CVL(file_path)
+
 def get_class_MNIST(file_path):
     class_str = re.split('\-|\_|\.',file_path)[-2]
     return int(class_str)
@@ -19,11 +26,13 @@ def get_class_CVL(file_path):
     return int(class_str)
 
 
+
 #0 MNIST
 #1 CVL
 
 #0 train
 #1 test
+
 def get_file_list(dataset_option, train_or_test):
   if dataset_option == 0 and train_or_test == 0:
     return glob.glob('Images_MNIST/Train/*')
@@ -35,7 +44,7 @@ def get_file_list(dataset_option, train_or_test):
     return glob.glob('Images_CVL/test/*')
 
 
-def get_dataset(feats_option, dataset_option, train_or_test):
+def get_dataset(feats_option, dataset_option, train_or_test, file_list):
   feats = None
   classes = []
   for file_path in file_list:
@@ -54,7 +63,7 @@ def get_dataset(feats_option, dataset_option, train_or_test):
     else:
       training_feats = np.vstack((feats,img_feats))
 
-      classes.append(get_class_from_file_path(file_path))
+      classes.append(get_class_from_file_path(file_path, dataset_option))
 
     return (feats, np.array(classes))
 
@@ -64,16 +73,21 @@ def get_dataset(feats_option, dataset_option, train_or_test):
 def main():
   # Read training images
 
-
-  feats_option = input()
-
-
   print ("Choose an option for features: \n"\
          "[1] 4c\n"\
          "[2] 8c\n"\
          "[3] 4c concatenated with 8c\n"\
          "[4] HOG"
   )
+
+  feats_option = input()
+
+  print ("Choose an option for dataset: \n"\
+         "[1] MNIST\n"\
+         "[2] CVL"\
+  )
+
+  dataset_option = input()
 
   training_file_list = glob.glob("Images_CVL/train/*")[0:9]
   testing_file_list = glob.glob("Images_CVL/test/*")
