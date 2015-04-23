@@ -2,6 +2,7 @@ from skimage.feature import hog
 from skimage import color
 from skimage.transform import resize
 import numpy as np
+import sys
 
 # Returns a list with the histogram concatenation
 def get_cc_feats(image, cc_name):
@@ -30,8 +31,11 @@ def get_cc_feats(image, cc_name):
       boxes.append(bw_img[vertical_a : vertical_b][horizontal_a : horizontal_b])
 
   # Get the histogram for each box and concatenate them
+  print ("boxes {0}".format(boxes))
+  sys.exit()
   img_hist = []
   for box in boxes:
+    print ("box {0}".format(box))
     if (cc_name == "4c"):
       local_hist = local_4c_hist(box)
     elif (cc_name == "8c"):
@@ -58,20 +62,24 @@ def local_mixed_hist(box):
 def local_cc_hist(box, directions):
   hist = [0] * 16
   # for each black point do this
-  for i in range(1, len(box) - 1):
-    for j in range(1, len(box[0]) - 1):
+  height, width = box.shape
+  for i in range(1, height - 1):
+    for j in range(1, width - 1):
       if box[i][j] == False:
         # This is a black point
+        print ("black point [{0}, {1}]".format(i, j))
         point = [i, j]
         bin_number = 0
         for i in range(len(directions)):
           if hit_4c(box, point, directions[i]):
+            print ("hit in {0}".format(directions[i]))
             bin_number += 2 ** i
         hist[bin_number] += 1
   return hist
 
 def hit_4c(box, starting_point, direction):
   current_point = starting_point
+  # print ("current_point {0}".format(current_point))
   if direction == "n":
     while in_limits(box, current_point):
       current_point[0] -= 1
