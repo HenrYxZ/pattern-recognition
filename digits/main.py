@@ -6,6 +6,7 @@ import re
 from sklearn.svm import SVC, LinearSVC
 from sklearn.metrics import confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
+import time
 
 ###HOG OPTIONS
 bins = 8
@@ -39,7 +40,12 @@ def get_class_CVL(file_path):
 def get_dataset(feats_option, dataset_option, file_list):
   feats = None
   classes = []
-  for file_path in file_list:
+  for i in range(len(file_list)):
+    file_path = file_list[i]
+    percentage = i * 100 / len(file_list)
+    step = (len(file_list) *  5) / 100
+    if i % step == 0:
+      print ("Done with {0}% of the images".format(percentage))
     image = misc.imread(file_path)
     ##  get features
     if feats_option == 1:
@@ -54,6 +60,9 @@ def get_dataset(feats_option, dataset_option, file_list):
       feats = img_feats
     else:
       feats = np.vstack((feats,img_feats))
+    # For debugging
+    if i < 5:
+      print "Img features for img [{0}] = {1}".format(i, img_feats)
 
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
@@ -81,8 +90,8 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")[0:1000]
-    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:50]
+    training_file_list = glob.glob("Images_MNIST/Train/*")[0:5000]
+    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:500]
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]
     testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
@@ -90,9 +99,10 @@ def main():
   ##############################################################################
   ###########                      Training                          ###########
   ##############################################################################
-
+  start = time.time()
   training_feats, training_classes = get_dataset(feats_option, dataset_option, training_file_list)
-
+  end = time.time()
+  print("Elapsed time getting training features: {0} secs".format(end - start))
   print(training_classes)
 
   # print("training feats")
@@ -106,19 +116,27 @@ def main():
   y = training_classes
 
   clf = SVC(kernel='linear')
+  start = time.time()
   clf.fit(X, y)
-
+  end = time.time()
+  print("Elapsed time training the classifier: {0} secs".format(end - start))
 
 
   ##############################################################################
   ###########                      Testing                           ###########
   ##############################################################################
 
+  start = time.time()
   testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
+  end = time.time()
+  print("Elapsed time getting testing's features: {0} secs".format(end - start))
 
+  start = time.time()
   X_test = testing_feats
   y_test_true = testing_classes
   y_test_predicted = clf.predict(X_test)
+  end = time.time()
+  print("Elapsed time testing: {0} secs".format(end - start))
 
   print("testing_classes")
   print(testing_classes)
