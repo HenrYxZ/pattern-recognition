@@ -34,6 +34,7 @@ def get_cc_feats(image, cc_name):
   img_hist = []
   for box in boxes:
     print ("box {0}".format(box))
+    print ("box shape {0}".format(box.shape))
     if (cc_name == "4c"):
       local_hist = local_4c_hist(box)
     elif (cc_name == "8c"):
@@ -69,10 +70,9 @@ def local_cc_hist(box, directions):
         print ("black point [{0}, {1}]".format(i, j))
         point = [i, j]
         bin_number = 0
-        for i in range(len(directions)):
-          if hit_cc(box, point, directions[i]):
-            print ("hit in {0}".format(directions[i]))
-            bin_number += 2 ** i
+        for k in range(len(directions)):
+          if hit_cc(box, point, directions[k]):
+            bin_number += 2 ** k
         hist[bin_number] += 1
   return hist
 
@@ -81,6 +81,7 @@ def hit_cc(box, starting_point, direction):
   # print ("current_point {0}".format(current_point))
   if direction == "n":
     while in_limits(box, current_point):
+      print ("current_point = {0}".format(current_point))
       current_point[0] -= 1
       # If we hit something not background
       if current_point == True:
