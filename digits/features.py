@@ -33,7 +33,7 @@ def get_cc_feats(image, cc_name):
       print("horizontal_a = {0}".format(horizontal_a))
       print("horizontal_b = {0}".format(horizontal_b))
       print("bw_img shape = {0}".format(bw_img.shape))
-      boxes.append(bw_img[vertical_a : vertical_b][horizontal_a : horizontal_b])
+      boxes.append(bw_img[vertical_a : vertical_b, horizontal_a : horizontal_b])
 
   # Get the histogram for each box and concatenate them
   print ("boxes {0}".format(boxes))
