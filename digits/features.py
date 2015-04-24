@@ -6,12 +6,12 @@ import sys
 
 # Returns a list with the histogram concatenation
 def get_cc_feats(image, cc_name):
-  threshold = 200 
+  threshold = 200
   if len(image.shape) == 3:
     # Using CVL
     height, width, channels = image.shape
     # Use a threshold to get a binary image
-    
+
     bw_img = (color.rgb2gray(image) * 255) < threshold
   else:
     # Using MNIST
