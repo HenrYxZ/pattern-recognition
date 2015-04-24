@@ -7,8 +7,12 @@ from sklearn.svm import SVC
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
 import random
 import math
+=======
+import time
+>>>>>>> a6ebd7fa5cc10335c73929ae17a55544c3c9414f
 
 ###HOG OPTIONS
 bins = 8
@@ -63,26 +67,30 @@ def optimize_parameters(X,y):
 def get_dataset(feats_option, dataset_option, file_list):
   feats = None
   classes = []
-  print(str(len(file_list)) + " imagenes en el set de datos")
-  i = 1
-  for file_path in file_list:
-    print(str(i) + ", "),
+
+  for i in range(len(file_list)):
+    file_path = file_list[i]
+    percentage = i * 100 / len(file_list)
+    step = (len(file_list) *  5) / 100
+    if i % step == 0:
+      print ("Done with {0}% of the images".format(percentage))
     image = misc.imread(file_path)
     ##  get features
     if feats_option == 1:
-      img_feats = features.get_4c_feats(image)
+      img_feats = features.get_cc_feats(image, "4c")
     elif feats_option == 2:
-      img_feats = features.get_8c_feats(image)
+      img_feats = features.get_cc_feats(image, "8c")
     elif feats_option == 3:
-      img_feats = features.get_mixed_feats(image)
+      img_feats = features.get_cc_feats(image, "mixed")
     else:
       img_feats = features.get_hog_feats(image,bins,side_pixels_per_cell,side_cells_per_block)
     if feats is None:
       feats = img_feats
     else:
       feats = np.vstack((feats,img_feats))
-    i += 1
-
+    # For debugging
+    if i < 5:
+      print "Img features for img [{0}] = {1}".format(i, img_feats)
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
 
@@ -119,48 +127,58 @@ def main():
   ##############################################################################
   ###########                      Training                          ###########
   ##############################################################################
-
+  start = time.time()
   training_feats, training_classes = get_dataset(feats_option, dataset_option, training_file_list)
-
+  end = time.time()
+  print("Elapsed time getting training features: {0} secs".format(end - start))
   print(training_classes)
 
   X = training_feats
   y = training_classes
 
-  c, gamma = optimize_parameters(X,y)
-  print("best c = "),
-  print(c)
-  print("best gamma = "),
-  print(gamma)
+#OPTIMIZAR PARÁMETROS
+  # c, gamma = optimize_parameters(X,y)
+  # print("best c = "),
+  # print(c)
+  # print("best gamma = "),
+  # print(gamma)
 
-  # clf = SVC(kernel='rbf')
-  # clf.fit(X, y)
-
+  clf = SVC(kernel='rbf')
+  start = time.time()
+  clf.fit(X, y)
+  end = time.time()
+  print("Elapsed time training the classifier: {0} secs".format(end - start))
 
 
   ##############################################################################
   ###########                      Testing                           ###########
   ##############################################################################
 
+  start = time.time()
   testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
+  end = time.time()
+  print("Elapsed time getting testing's features: {0} secs".format(end - start))
 
-  # X_test = testing_feats
-  # y_test_true = testing_classes
-  # y_test_predicted = clf.predict(X_test)
-  #
-  # print("testing_classes")
-  # print(testing_classes)
-  #
-  # confusion = confusion_matrix(y_test_true, y_test_predicted)
-  # accuracy = accuracy_score(y_test_true, y_test_predicted)
-  # print("Accuracy = "),
-  # print(accuracy)
-  #
-  #   # Show confusion matrix
-  # plt.matshow(confusion)
-  # plt.title('Confusion matrix')
-  # plt.colorbar()
-  # plt.show()
+  start = time.time()
+  X_test = testing_feats
+  y_test_true = testing_classes
+  y_test_predicted = clf.predict(X_test)
+  end = time.time()
+  print("Elapsed time testing: {0} secs".format(end - start))
+
+  print("testing_classes")
+  print(testing_classes)
+
+  confusion = confusion_matrix(y_test_true, y_test_predicted)
+  accuracy = accuracy_score(y_test_true, y_test_predicted)
+  print("Accuracy = "),
+  print(accuracy)
+
+    # Show confusion matrix
+  plt.matshow(confusion)
+  plt.title('Confusion matrix')
+  plt.colorbar()
+  plt.show()
 
 if __name__ == '__main__':
   main()
