@@ -3,9 +3,12 @@ import features
 import glob
 from scipy import misc
 import re
-from sklearn.svm import SVC, LinearSVC
+from sklearn.svm import SVC
+from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
+import random
+import math
 
 ###HOG OPTIONS
 bins = 8
@@ -27,6 +30,27 @@ def get_class_CVL(file_path):
     class_str = file_path.split('/')[-1].split('-')[0]
     return int(class_str)
 
+def optimize_parameters(X,y):
+  exponents = range(-10,10)
+  best_c_exp = None
+  best_gamma_exp = None
+  best_accuracy = - np.inf
+  for exp_C in exponents:
+    for exp_gamma in exponents:
+      print("Probando con C = 2^"+str(exp_C) +" y gamma = 2^"+str(exp_gamma)+" ... ")
+      c = math.pow(2.0,exp_C)
+      gamma_ = math.pow(2.0,exp_gamma)
+      clf = SVC(kernel='rbf',C=c,gamma=gamma_)
+      scores = cross_validation.cross_val_score(clf, X, y, cv=5)
+      accuracy = scores.mean()
+      print("Accurracy = " + str(accuracy))
+      if accuracy > best_accuracy:
+        best_accuracy = accuracy
+        best_c_exp = exp_C
+        best_gamma_exp = exp_gamma
+  return best_c_exp, best_gamma_exp
+
+
 
 
 #1 MNIST
@@ -39,7 +63,10 @@ def get_class_CVL(file_path):
 def get_dataset(feats_option, dataset_option, file_list):
   feats = None
   classes = []
+  print(str(len(file_list)) + " imagenes en el set de datos")
+  i = 1
   for file_path in file_list:
+    print(str(i) + ", "),
     image = misc.imread(file_path)
     ##  get features
     if feats_option == 1:
@@ -54,6 +81,7 @@ def get_dataset(feats_option, dataset_option, file_list):
       feats = img_feats
     else:
       feats = np.vstack((feats,img_feats))
+    i += 1
 
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
@@ -81,8 +109,9 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")[0:200]
-    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:50]
+    training_file_list = glob.glob("Images_MNIST/Train/*")
+    training_file_list = random.sample(training_file_list,1000)
+  #  testing_file_list = glob.glob("Images_MNIST/Test/*")
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]
     testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
@@ -95,18 +124,17 @@ def main():
 
   print(training_classes)
 
-  # print("training feats")
-  # print(training_feats.shape)
-  # print(training_feats)
-  # print("")
-  # print("training classes")
-  # print(training_classes.shape)
-  # print(training_classes)
   X = training_feats
   y = training_classes
 
-  clf = SVC(kernel='rbf')
-  clf.fit(X, y)
+  c, gamma = optimize_parameters(X,y)
+  print("best c = "),
+  print(c)
+  print("best gamma = "),
+  print(gamma)
+
+  # clf = SVC(kernel='rbf')
+  # clf.fit(X, y)
 
 
 
@@ -116,23 +144,23 @@ def main():
 
   testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
 
-  X_test = testing_feats
-  y_test_true = testing_classes
-  y_test_predicted = clf.predict(X_test)
-
-  print("testing_classes")
-  print(testing_classes)
-
-  confusion = confusion_matrix(y_test_true, y_test_predicted)
-  accuracy = accuracy_score(y_test_true, y_test_predicted)
-  print("Accuracy = "),
-  print(accuracy)
-
-    # Show confusion matrix
-  plt.matshow(confusion)
-  plt.title('Confusion matrix')
-  plt.colorbar()
-  plt.show()
+  # X_test = testing_feats
+  # y_test_true = testing_classes
+  # y_test_predicted = clf.predict(X_test)
+  #
+  # print("testing_classes")
+  # print(testing_classes)
+  #
+  # confusion = confusion_matrix(y_test_true, y_test_predicted)
+  # accuracy = accuracy_score(y_test_true, y_test_predicted)
+  # print("Accuracy = "),
+  # print(accuracy)
+  #
+  #   # Show confusion matrix
+  # plt.matshow(confusion)
+  # plt.title('Confusion matrix')
+  # plt.colorbar()
+  # plt.show()
 
 if __name__ == '__main__':
   main()
