@@ -7,12 +7,9 @@ from sklearn.svm import SVC
 from sklearn import cross_validation
 from sklearn.metrics import confusion_matrix, accuracy_score
 import matplotlib.pyplot as plt
-<<<<<<< HEAD
 import random
 import math
-=======
 import time
->>>>>>> a6ebd7fa5cc10335c73929ae17a55544c3c9414f
 
 ###HOG OPTIONS
 bins = 8
@@ -118,7 +115,7 @@ def main():
 
   if dataset_option == 1:
     training_file_list = glob.glob("Images_MNIST/Train/*")
-    training_file_list = random.sample(training_file_list,1000)
+    training_file_list = random.sample(training_file_list,20000)
   #  testing_file_list = glob.glob("Images_MNIST/Test/*")
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]
@@ -136,7 +133,7 @@ def main():
   X = training_feats
   y = training_classes
 
-#OPTIMIZAR PARÁMETROS
+#OPTIMIZAR PARAMETROS
   # c, gamma = optimize_parameters(X,y)
   # print("best c = "),
   # print(c)
