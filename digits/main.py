@@ -115,7 +115,7 @@ def main():
 
   if dataset_option == 1:
     training_file_list = glob.glob("Images_MNIST/Train/*")
-    training_file_list = random.sample(training_file_list,20000)
+    training_file_list = random.sample(training_file_list,1000)
   #  testing_file_list = glob.glob("Images_MNIST/Test/*")
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]
@@ -134,11 +134,11 @@ def main():
   y = training_classes
 
 #OPTIMIZAR PARAMETROS
-  # c, gamma = optimize_parameters(X,y)
-  # print("best c = "),
-  # print(c)
-  # print("best gamma = "),
-  # print(gamma)
+  c, gamma = optimize_parameters(X,y)
+  print("best c = "),
+  print(c)
+  print("best gamma = "),
+  print(gamma)
 
   clf = SVC(kernel='rbf')
   start = time.time()
@@ -151,31 +151,31 @@ def main():
   ###########                      Testing                           ###########
   ##############################################################################
 
-  start = time.time()
-  testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
-  end = time.time()
-  print("Elapsed time getting testing's features: {0} secs".format(end - start))
-
-  start = time.time()
-  X_test = testing_feats
-  y_test_true = testing_classes
-  y_test_predicted = clf.predict(X_test)
-  end = time.time()
-  print("Elapsed time testing: {0} secs".format(end - start))
-
-  print("testing_classes")
-  print(testing_classes)
-
-  confusion = confusion_matrix(y_test_true, y_test_predicted)
-  accuracy = accuracy_score(y_test_true, y_test_predicted)
-  print("Accuracy = "),
-  print(accuracy)
-
-    # Show confusion matrix
-  plt.matshow(confusion)
-  plt.title('Confusion matrix')
-  plt.colorbar()
-  plt.show()
+  # start = time.time()
+  # testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
+  # end = time.time()
+  # print("Elapsed time getting testing's features: {0} secs".format(end - start))
+  #
+  # start = time.time()
+  # X_test = testing_feats
+  # y_test_true = testing_classes
+  # y_test_predicted = clf.predict(X_test)
+  # end = time.time()
+  # print("Elapsed time testing: {0} secs".format(end - start))
+  #
+  # print("testing_classes")
+  # print(testing_classes)
+  #
+  # confusion = confusion_matrix(y_test_true, y_test_predicted)
+  # accuracy = accuracy_score(y_test_true, y_test_predicted)
+  # print("Accuracy = "),
+  # print(accuracy)
+  #
+  #   # Show confusion matrix
+  # plt.matshow(confusion)
+  # plt.title('Confusion matrix')
+  # plt.colorbar()
+  # plt.show()
 
 if __name__ == '__main__':
   main()

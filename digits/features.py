@@ -98,7 +98,7 @@ def hit_cc(box, starting_point, direction):
       if current_point:
         return True
     return False
-  elif:
+  elif direction == "e":
     while in_limits(box, current_point):
       current_point[1] += 1
       if current_point:
