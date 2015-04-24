@@ -63,8 +63,8 @@ def local_cc_hist(box, directions):
   hist = [0] * 16
   # for each black point do this
   height, width = box.shape
-  for i in range(1, height - 1):
-    for j in range(1, width - 1):
+  for i in range(height):
+    for j in range(width):
       if box[i][j] == False:
         # This is a black point
         print ("black point [{0}, {1}]".format(i, j))
@@ -84,54 +84,71 @@ def hit_cc(box, starting_point, direction):
       print ("current_point = {0}".format(current_point))
       current_point[0] -= 1
       # If we hit something not background
-      if current_point == True:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
+        sys.exit()
         return True
     return False
   elif direction == "s":
     while in_limits(box, current_point):
       current_point[0] += 1
-      if current_point:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
         return True
     return False
   elif direction == "w":
     while in_limits(box, current_point):
       current_point[1] -= 1
-      if current_point:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
         return True
     return False
   elif direction == "e":
     while in_limits(box, current_point):
       current_point[1] += 1
-      if current_point:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
         return True
     return False
   elif direction == "nw":
     while in_limits(box, current_point):
       current_point[0] -= 1
       current_point[1] -= 1
+      row = current_point[0]
+      col = current_point[1]
       # If we hit something not background
-      if current_point == True:
+      if box[row, col] == True:
         return True
     return False
   elif direction == "sw":
     while in_limits(box, current_point):
       current_point[0] += 1
       current_point[1] -= 1
-      if current_point:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
         return True
     return False
   elif direction == "ne":
     while in_limits(box, current_point):
       current_point[0] -= 1
       current_point[1] += 1
-      if current_point:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
         return True
     return False
   else:
     while in_limits(box, current_point):
       current_point[0] += 1
       current_point[1] += 1
-      if current_point:
+      row = current_point[0]
+      col = current_point[1]
+      if box[row, col] == True:
         return True
     return False
 
