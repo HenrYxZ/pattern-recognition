@@ -29,16 +29,8 @@ def get_cc_feats(image, cc_name):
       vertical_b = (i + 1) * vertical_step - 1
       horizontal_a = j * horizontal_step
       horizontal_b = (j + 1) * horizontal_step - 1
-      print("vertical_a = {0}, vertical_b = {1}".format(vertical_a, vertical_b))
-      print("horizontal_a = {0}".format(horizontal_a))
-      print("horizontal_b = {0}".format(horizontal_b))
-      print("bw_img shape = {0}".format(bw_img.shape))
       boxes.append(bw_img[vertical_a : vertical_b, horizontal_a : horizontal_b])
 
-  # Get the histogram for each box and concatenate them
-  print ("boxes {0}".format(boxes))
-  sys.exit()
-  #-----------------------------------------------------------------------------
   img_hist = []
   for box in boxes:
     print ("box {0}".format(box))
@@ -48,6 +40,7 @@ def get_cc_feats(image, cc_name):
       local_hist = local_8c_hist(box)
     else:
       local_hist = local_mixed_hist(box)
+    print ("local_hist {0}".format(local_hist))
     # List concatenation
     img_hist = img_hist + local_hist
   return img_hist
@@ -77,13 +70,13 @@ def local_cc_hist(box, directions):
         point = [i, j]
         bin_number = 0
         for i in range(len(directions)):
-          if hit_4c(box, point, directions[i]):
+          if hit_cc(box, point, directions[i]):
             print ("hit in {0}".format(directions[i]))
             bin_number += 2 ** i
         hist[bin_number] += 1
   return hist
 
-def hit_4c(box, starting_point, direction):
+def hit_cc(box, starting_point, direction):
   current_point = starting_point
   # print ("current_point {0}".format(current_point))
   if direction == "n":
@@ -105,16 +98,13 @@ def hit_4c(box, starting_point, direction):
       if current_point:
         return True
     return False
-  else:
+  elif:
     while in_limits(box, current_point):
       current_point[1] += 1
       if current_point:
         return True
     return False
-
-def hit_8c(box, starting_point, direction):
-  current_point = starting_point
-  if direction == "nw":
+  elif direction == "nw":
     while in_limits(box, current_point):
       current_point[0] -= 1
       current_point[1] -= 1
