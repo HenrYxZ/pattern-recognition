@@ -6,16 +6,17 @@ import sys
 
 # Returns a list with the histogram concatenation
 def get_cc_feats(image, cc_name):
+  threshold = 200 
   if len(image.shape) == 3:
     # Using CVL
     height, width, channels = image.shape
     # Use a threshold to get a binary image
-    threshold = 200 
+    
     bw_img = (color.rgb2gray(image) * 255) < threshold
   else:
     # Using MNIST
     height, width = image.shape
-    bw_img = image < 200
+    bw_img = image < threshold
 
   vertical_step = height / 3
   horizontal_step = width / 3
@@ -28,11 +29,16 @@ def get_cc_feats(image, cc_name):
       vertical_b = (i + 1) * vertical_step - 1
       horizontal_a = j * horizontal_step
       horizontal_b = (j + 1) * horizontal_step - 1
+      print("vertical_a = {0}, vertical_b = {1}".format(vertical_a, vertical_b))
+      print("horizontal_a = {0}".format(horizontal_a))
+      print("horizontal_b = {0}".format(horizontal_b))
+      print("bw_img shape = {0}".format(bw_img.shape))
       boxes.append(bw_img[vertical_a : vertical_b][horizontal_a : horizontal_b])
 
   # Get the histogram for each box and concatenate them
   print ("boxes {0}".format(boxes))
   sys.exit()
+  #-----------------------------------------------------------------------------
   img_hist = []
   for box in boxes:
     print ("box {0}".format(box))
