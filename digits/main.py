@@ -93,21 +93,6 @@ def get_dataset(feats_option, dataset_option, file_list):
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
 
-# This method gives one representative feature for each class
-def get_hint(features, classes):
-  hint = None
-  current_class = 0
-  for i in range(len(classes)):
-    if classes[i] == current_class:
-      if hint is None:
-        hint = features[i]
-      else:
-        hint = np.vstack((hint, features[i]))
-      current_class += 1
-      if current_class > 9:
-        break
-  return hint
-
 ################################################################################
 #             MAIN
 #-------------------------------------------------------------------------------
@@ -131,9 +116,9 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")[0:3000]
-    # training_file_list = random.sample(training_file_list, 1000)
-    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:250]
+    training_file_list = glob.glob("Images_MNIST/Train/*")
+    training_file_list = random.sample(training_file_list, 1000)
+    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:1000]
   else :
     training_file_list = glob.glob("Images_CVL/train/*")
     training_file_list = random.sample(training_file_list, 1000)
@@ -143,6 +128,7 @@ def main():
   ##############################################################################
   ###########                      Training                          ###########
   ##############################################################################
+  print ("Starting to train using {0} images".format(len(training_file_list)))
   start = time.time()
   training_feats, training_classes = get_dataset(feats_option, dataset_option, training_file_list)
   end = time.time()
@@ -163,12 +149,10 @@ def main():
 
   clf = SVC(kernel='rbf')
   start = time.time()
-  clf.fit(X, y)
-  # hint = get_hint(X, y)
-  # print ("hint shape = {0}".format(hint.shape))
-  # means = kmeans.get_means(X, hint)
-  # print ("means = \n {0}".format(means))
-  # np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
+  # clf.fit(X, y)
+  means = kmeans.get_means(X, y)
+  print ("means = \n {0}".format(means))
+  np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
   end = time.time()
   print("Elapsed time training the classifier: {0} secs".format(end - start))
 
@@ -176,7 +160,7 @@ def main():
   ##############################################################################
   ###########                      Testing                           ###########
   ##############################################################################
-
+  print ("Starting to test using {0} images".format(len(testing_file_list)))
   start = time.time()
   testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
   end = time.time()
@@ -185,8 +169,8 @@ def main():
   start = time.time()
   X_test = testing_feats
   y_test_true = testing_classes
-  y_test_predicted = clf.predict(X_test)
-  # y_test_predicted = kmeans.classify(X_test, means)
+  # y_test_predicted = clf.predict(X_test)
+  y_test_predicted = kmeans.classify(X_test, means)
   end = time.time()
   print("Elapsed time testing: {0} secs".format(end - start))
   

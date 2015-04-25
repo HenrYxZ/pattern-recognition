@@ -1,44 +1,21 @@
 import numpy as np
 
-def get_means(X, hint):
+def get_means(X, classes):
   D = len(X[0])
   n = len(X)
-  k = len(hint)
-  means = hint
-  changed = True
-  assignation = [0] * n  
-
-  while changed:
-    changed = False
-    cluster_changed = [False] * k
-
-    ### Assignation of cluster for each point
-    #---------------------------------------------------------------------------
-    # For each instance object vector point find the nearest mean
-    for i in range(n):
-      nearest_j = assign(X[i], means, assignation[i])
-      # If the point changed the cluster
-      if nearest_j != assignation[i]:
-        changed = True
-        cluster_changed[assignation[i]] = True
-        # Assign the point to the new cluster
-        assignation[i] = nearest_j
-
-    ### New mean for each cluster changed
-    #---------------------------------------------------------------------------
-    for j in range(k):
-      if cluster_changed[j]:
-        vector_sum = np.zeros(D)
-        count = 0
-        for i in range(n):
-          # If this point was assigned to this cluster
-          if assignation[i] == j:
-            vector_sum = vector_sum + X[i]
-            count += 1
-        # Recalculate mean
-        if count > 0:
-          means[j] = vector_sum / count
-
+  k = 10
+  cluster_sums = np.zeros((k, D))
+  cluster_counts = [0] * 10
+  means = np.zeros((k, D))
+  # Get the sum of points for each class
+  for i in range(n):
+    this_class = classes[i]
+    cluster_sums[this_class] += X[i]
+    cluster_counts[this_class] += 1
+  # Get the mean for each class by interpolation of points
+  for j in range(k):
+    if cluster_counts[j] > 0:
+      means[j] = cluster_sums[j] / float(cluster_counts[j])
   return means
 
 def assign(point, means, nearest_j):
