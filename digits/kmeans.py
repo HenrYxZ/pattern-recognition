@@ -3,6 +3,7 @@ import numpy as np
 def get_means(X, hint):
   D = len(X[0])
   n = len(X)
+  k = len(hint)
   means = hint
   changed = True
   assignation = [0] * n  

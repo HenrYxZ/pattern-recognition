@@ -3,8 +3,11 @@ skin-detector/imagenes/
 digits/Images_CVL/
 digits/Images_MNIST/
 
-# IDES
-.idea/
+# IDEs
+*.idea/
+
+# Automatically generated files
+digits/means.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

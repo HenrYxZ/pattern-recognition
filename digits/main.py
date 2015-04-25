@@ -86,22 +86,27 @@ def get_dataset(feats_option, dataset_option, file_list):
     if feats is None:
       feats = img_feats
     else:
-      feats = np.vstack((feats,img_feats))
+      feats = np.vstack((feats, img_feats))
     # For debugging
     # if i < 5:
     #   print "Img features for img [{0}] = {1}".format(i, img_feats)
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
 
+# This method gives one representative feature for each class
 def get_hint(features, classes):
   hint = None
   current_class = 0
   for i in range(len(classes)):
     if classes[i] == current_class:
-      hint = np.vstack(hint, features[i])
+      if hint is None:
+        hint = features[i]
+      else:
+        hint = np.vstack((hint, features[i]))
       current_class += 1
       if current_class > 9:
         break
+  return hint
 
 ################################################################################
 #             MAIN
@@ -126,7 +131,7 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")[0:250]
+    training_file_list = glob.glob("Images_MNIST/Train/*")[0:3000]
     # training_file_list = random.sample(training_file_list, 1000)
     testing_file_list = glob.glob("Images_MNIST/Test/*")[0:250]
   else :
@@ -159,8 +164,10 @@ def main():
   clf = SVC(kernel='rbf')
   start = time.time()
   # clf.fit(X, y)
-  means = kmeans.get_means(X, 10)
-  print ("means = {0}".format(means))
+  hint = get_hint(X, y)
+  print ("hint shape = {0}".format(hint.shape))
+  means = kmeans.get_means(X, hint)
+  print ("means = \n {0}".format(means))
   np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
   end = time.time()
   print("Elapsed time training the classifier: {0} secs".format(end - start))
@@ -179,7 +186,7 @@ def main():
   X_test = testing_feats
   y_test_true = testing_classes
   # y_test_predicted = clf.predict(X_test)
-  y_test_predicted = kmeans.classify(X, means)
+  y_test_predicted = kmeans.classify(X_test, means)
   end = time.time()
   print("Elapsed time testing: {0} secs".format(end - start))
   
@@ -187,7 +194,7 @@ def main():
   print(testing_classes)
   
   confusion = confusion_matrix(y_test_true, y_test_predicted)
-  print("confusion matrix = {0}".format(confusion))
+  print("confusion matrix = \n {0}".format(confusion))
 
   accuracy = accuracy_score(y_test_true, y_test_predicted)
   print("Accuracy = "),
