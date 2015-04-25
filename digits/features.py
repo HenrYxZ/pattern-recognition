@@ -83,64 +83,50 @@ def hit_cc(box, starting_point, direction):
 def hit_4c(box, starting_point, direction):
   current_point = starting_point
   if direction == "n":
-    return True in box[0 : starting_point[0], starting_point[1]]
+    block = box[0 : starting_point[0], starting_point[1]]
   elif direction == "s":
-    return True in box[starting_point[0]:, starting_point[1]]
+    block = box[starting_point[0]:, starting_point[1]]
   elif direction == "w":
-    return True in box[starting_point[0], 0 : starting_point[1]]
+    block = box[starting_point[0], 0 : starting_point[1]]
   else:
-    return True in box[starting_point[0], starting_point[1]:]
+    block = box[starting_point[0], starting_point[1]:]
+
+  hit = True in block
+  if direction == "n" and hit:
+    print ("dir = {0}\n block = {1}".format(direction, block))
+    sys.exit()
+  return hit
 
 def hit_8c(box, starting_point, direction):
-  if direction == "nw":
-    while in_limits(box, current_point):
-      current_point[0] -= 1
-      current_point[1] -= 1
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      # If we hit something not background
-      if box[row, col] == True:
-        return True
-  elif direction == "sw":
-    while in_limits(box, current_point):
-      current_point[0] += 1
-      current_point[1] -= 1
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        return True
-  elif direction == "ne":
-    while in_limits(box, current_point):
-      current_point[0] -= 1
-      current_point[1] += 1
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        return True
-  else:
-    while in_limits(box, current_point):
-      current_point[0] += 1
-      current_point[1] += 1
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        return True
+  current_row = starting_point[0]
+  current_col = starting_point[1]
+  while in_limits(box, point):
+    if direction == "nw":
+      row -= 1
+      col -= 1
+    elif direction == "sw":
+      row += 1
+      col -= 1
+    elif direction == "ne":
+      row -= 1
+      col += 1
+    else:
+      row += 1
+      col += 1
+    if box[row, col] == True:
+      if direction == "nw":
+        print ("dir = {0}\n hit in = [{1}, {2}]".format(direction, row, col))
+        sys.exit()
+      return True
+  return False
+
 
 def normalize(hist):
   total = sum(hist)
   if total == 0:
     return 0
-  for i in range(len(hist)):
-    hist[i] = hist[i] / total
-  return hist
+  else:
+    return [element / float(total) for element in hist]
 
 def in_limits(box, point):
   in_limits_rows = point[0] >= 0 and point[0] < len(box)
@@ -148,6 +134,7 @@ def in_limits(box, point):
   if in_limits_rows and in_limits_cols:
     return True
   else:
+    print ("Out of limit in point = {0}".format(point))
     return False
 
 
