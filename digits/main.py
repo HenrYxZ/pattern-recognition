@@ -13,7 +13,7 @@ import time
 
 ###HOG OPTIONS
 bins = 8
-side_pixels_per_cell = 7
+side_pixels_per_cell = 16
 side_cells_per_block = 3
 
 
@@ -32,12 +32,13 @@ def get_class_CVL(file_path):
     return int(class_str)
 
 def optimize_parameters(X,y):
-  exponents = range(-10,10)
+  exponents_C = range(-10,10)
+  exponents_gamma = range(-10,10)
   best_c_exp = None
   best_gamma_exp = None
   best_accuracy = - np.inf
-  for exp_C in exponents:
-    for exp_gamma in exponents:
+  for exp_C in exponents_C:
+    for exp_gamma in exponents_gamma:
       print("Probando con C = 2^"+str(exp_C) +" y gamma = 2^"+str(exp_gamma)+" ... ")
       c = math.pow(2.0,exp_C)
       gamma_ = math.pow(2.0,exp_gamma)
@@ -49,7 +50,7 @@ def optimize_parameters(X,y):
         best_accuracy = accuracy
         best_c_exp = exp_C
         best_gamma_exp = exp_gamma
-  return best_c_exp, best_gamma_exp
+  return best_c_exp, best_gamma_exp, best_accuracy
 
 
 
@@ -118,8 +119,9 @@ def main():
     training_file_list = random.sample(training_file_list,1000)
   #  testing_file_list = glob.glob("Images_MNIST/Test/*")
   else :
-    training_file_list = glob.glob("Images_CVL/train/*")[0:200]
-    testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
+    training_file_list = glob.glob("Images_CVL/train/*")
+    training_file_list = random.sample(training_file_list,1000)
+    #testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
 
   ##############################################################################
   ###########                      Training                          ###########
@@ -134,11 +136,13 @@ def main():
   y = training_classes
 
 #OPTIMIZAR PARAMETROS
-  c, gamma = optimize_parameters(X,y)
-  print("best c = "),
+  c, gamma, accuracy = optimize_parameters(X,y)
+  print("best c exp = "),
   print(c)
-  print("best gamma = "),
+  print("best gamma expc = "),
   print(gamma)
+  print("best accuracy = "),
+  print(accuracy)
 
   clf = SVC(kernel='rbf')
   start = time.time()
