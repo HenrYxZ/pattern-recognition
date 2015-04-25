@@ -127,7 +127,7 @@ def hit_8c(box, starting_point, direction):
 def normalize(hist):
   total = sum(hist)
   if total == 0:
-    return 0
+    return [0.0] * 16
   else:
     return [element / float(total) for element in hist]
 

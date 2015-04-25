@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import random
 import math
 import time
+import kmeans
 
 ###HOG OPTIONS
 bins = 8
@@ -87,8 +88,8 @@ def get_dataset(feats_option, dataset_option, file_list):
     else:
       feats = np.vstack((feats,img_feats))
     # For debugging
-    if i < 5:
-      print "Img features for img [{0}] = {1}".format(i, img_feats)
+    # if i < 5:
+    #   print "Img features for img [{0}] = {1}".format(i, img_feats)
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
 
@@ -115,13 +116,13 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")
-    training_file_list = random.sample(training_file_list,1000)
-  #  testing_file_list = glob.glob("Images_MNIST/Test/*")
+    training_file_list = glob.glob("Images_MNIST/Train/*")[0:250]
+    # training_file_list = random.sample(training_file_list,1000)
+    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:250]
   else :
     training_file_list = glob.glob("Images_CVL/train/*")
-    training_file_list = random.sample(training_file_list,1000)
-    #testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
+    # training_file_list = random.sample(training_file_list,1000)
+    testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
 
   ##############################################################################
   ###########                      Training                          ###########
@@ -136,17 +137,20 @@ def main():
   y = training_classes
 
 #OPTIMIZAR PARAMETROS
-  c, gamma, accuracy = optimize_parameters(X,y)
-  print("best c exp = "),
-  print(c)
-  print("best gamma expc = "),
-  print(gamma)
-  print("best accuracy = "),
-  print(accuracy)
+  # c, gamma, accuracy = optimize_parameters(X,y)
+  # print("best c exp = "),
+  # print(c)
+  # print("best gamma expc = "),
+  # print(gamma)
+  # print("best accuracy = "),
+  # print(accuracy)
 
   clf = SVC(kernel='rbf')
   start = time.time()
-  clf.fit(X, y)
+  # clf.fit(X, y)
+  means = kmeans.get_means(X, 10)
+  print ("means = {0}".format(means))
+  np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
   end = time.time()
   print("Elapsed time training the classifier: {0} secs".format(end - start))
 
@@ -155,31 +159,34 @@ def main():
   ###########                      Testing                           ###########
   ##############################################################################
 
-  # start = time.time()
-  # testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
-  # end = time.time()
-  # print("Elapsed time getting testing's features: {0} secs".format(end - start))
-  #
-  # start = time.time()
-  # X_test = testing_feats
-  # y_test_true = testing_classes
+  start = time.time()
+  testing_feats, testing_classes = get_dataset(feats_option, dataset_option, testing_file_list)
+  end = time.time()
+  print("Elapsed time getting testing's features: {0} secs".format(end - start))
+  
+  start = time.time()
+  X_test = testing_feats
+  y_test_true = testing_classes
   # y_test_predicted = clf.predict(X_test)
-  # end = time.time()
-  # print("Elapsed time testing: {0} secs".format(end - start))
-  #
-  # print("testing_classes")
-  # print(testing_classes)
-  #
-  # confusion = confusion_matrix(y_test_true, y_test_predicted)
-  # accuracy = accuracy_score(y_test_true, y_test_predicted)
-  # print("Accuracy = "),
-  # print(accuracy)
-  #
-  #   # Show confusion matrix
-  # plt.matshow(confusion)
-  # plt.title('Confusion matrix')
-  # plt.colorbar()
-  # plt.show()
+  y_test_predicted = kmeans.classify(X, means)
+  end = time.time()
+  print("Elapsed time testing: {0} secs".format(end - start))
+  
+  print("testing_classes")
+  print(testing_classes)
+  
+  confusion = confusion_matrix(y_test_true, y_test_predicted)
+  print("confusion matrix = {0}".format(confusion))
+
+  accuracy = accuracy_score(y_test_true, y_test_predicted)
+  print("Accuracy = "),
+  print(accuracy)
+  
+    # Show confusion matrix
+  plt.matshow(confusion)
+  plt.title('Confusion matrix')
+  plt.colorbar()
+  plt.show()
 
 if __name__ == '__main__':
   main()
