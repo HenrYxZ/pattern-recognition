@@ -32,20 +32,20 @@ def get_cc_feats(image, cc_name):
       boxes.append(bw_img[vertical_a : vertical_b, horizontal_a : horizontal_b])
 
   img_hist = []
+  # Get the local histogram for each box and concatenate them
   for box in boxes:
-    print ("box = {0}".format(box))
-    print ("box shape = {0}".format(box.shape))
+    # print ("box = {0}".format(box))
+    # print ("box shape = {0}".format(box.shape))
     if (cc_name == "4c"):
       local_hist = local_cc_hist(box, "4c")
     elif (cc_name == "8c"):
       local_hist = local_cc_hist(box, "8c")
     else:
       local_hist = local_mixed_hist(box)
-    print ("local_hist = {0}".format(local_hist))
+    # print ("local_hist = {0}".format(local_hist))
     # List concatenation
-    img_hist = img_hist + local_hist
-  img_hist = normalize(img_hist)
-  print ("normalized hist = {0}".format(img_hist))
+    img_hist = img_hist + normalize(local_hist)
+  # print ("image hist = {0}".format(img_hist))
   return img_hist
 
 def local_mixed_hist(box):
@@ -61,7 +61,7 @@ def local_cc_hist(box, method_name):
     for j in range(width):
       if box[i][j] == False:
         # This is a black point
-        print ("black point [{0}, {1}]".format(i, j))
+        # print ("black point [{0}, {1}]".format(i, j))
         point = [i, j]
         bin_number = 0
         if method_name == "4c":
@@ -92,15 +92,15 @@ def hit_4c(box, starting_point, direction):
     block = box[starting_point[0], starting_point[1]:]
 
   hit = True in block
-  if direction == "n" and hit:
-    print ("dir = {0}\n block = {1}".format(direction, block))
-    sys.exit()
+  # if direction == "e" and hit:
+  #   print ("dir = {0}\n block = {1}".format(direction, block))
+  #   sys.exit()
   return hit
 
 def hit_8c(box, starting_point, direction):
-  current_row = starting_point[0]
-  current_col = starting_point[1]
-  while in_limits(box, point):
+  row = starting_point[0]
+  col = starting_point[1]
+  while True:
     if direction == "nw":
       row -= 1
       col -= 1
@@ -113,10 +113,12 @@ def hit_8c(box, starting_point, direction):
     else:
       row += 1
       col += 1
-    if box[row, col] == True:
-      if direction == "nw":
-        print ("dir = {0}\n hit in = [{1}, {2}]".format(direction, row, col))
-        sys.exit()
+    if not in_limits(box, [row, col]):
+      break
+    elif box[row, col] == True:
+      # if direction == "se":
+      #   print ("dir = {0}\n hit in = [{1}, {2}]".format(direction, row, col))
+      #   sys.exit()
       return True
   return False
 
@@ -134,7 +136,7 @@ def in_limits(box, point):
   if in_limits_rows and in_limits_cols:
     return True
   else:
-    print ("Out of limit in point = {0}".format(point))
+    # print ("Out of limit in point = {0}".format(point))
     return False
 
 

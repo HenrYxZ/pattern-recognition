@@ -116,7 +116,7 @@ def main():
   if dataset_option == 1:
     training_file_list = glob.glob("Images_MNIST/Train/*")[0:2000]
   # training_file_list = random.sample(training_file_list,20000)
-  #  testing_file_list = glob.glob("Images_MNIST/Test/*")
+    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:500]
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]
     testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
