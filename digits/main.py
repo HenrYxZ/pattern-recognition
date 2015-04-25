@@ -163,12 +163,12 @@ def main():
 
   clf = SVC(kernel='rbf')
   start = time.time()
-  # clf.fit(X, y)
-  hint = get_hint(X, y)
-  print ("hint shape = {0}".format(hint.shape))
-  means = kmeans.get_means(X, hint)
-  print ("means = \n {0}".format(means))
-  np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
+  clf.fit(X, y)
+  # hint = get_hint(X, y)
+  # print ("hint shape = {0}".format(hint.shape))
+  # means = kmeans.get_means(X, hint)
+  # print ("means = \n {0}".format(means))
+  # np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
   end = time.time()
   print("Elapsed time training the classifier: {0} secs".format(end - start))
 
@@ -185,8 +185,8 @@ def main():
   start = time.time()
   X_test = testing_feats
   y_test_true = testing_classes
-  # y_test_predicted = clf.predict(X_test)
-  y_test_predicted = kmeans.classify(X_test, means)
+  y_test_predicted = clf.predict(X_test)
+  # y_test_predicted = kmeans.classify(X_test, means)
   end = time.time()
   print("Elapsed time testing: {0} secs".format(end - start))
   
