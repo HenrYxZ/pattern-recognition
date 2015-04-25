@@ -83,46 +83,13 @@ def hit_cc(box, starting_point, direction):
 def hit_4c(box, starting_point, direction):
   current_point = starting_point
   if direction == "n":
-    while True:
-      current_point[0] -= 1
-      # If we hit something not background
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        return True
+    return True in box[0 : starting_point[0], starting_point[1]]
   elif direction == "s":
-    while in_limits(box, current_point):
-      current_point[0] += 1
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        return True
+    return True in box[starting_point[0]:, starting_point[1]]
   elif direction == "w":
-    while in_limits(box, current_point):
-      current_point[1] -= 1
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        return True
+    return True in box[starting_point[0], 0 : starting_point[1]]
   else:
-    while in_limits(box, current_point):
-      #print ("current_point = {0}".format(current_point))
-      current_point[1] += 1
-      #print ("current_point 1 = {0}".format(current_point))
-      if not in_limits(box, current_point):
-        return False
-      row = current_point[0]
-      col = current_point[1]
-      if box[row, col] == True:
-        #print ("hit!")
-        #sys.exit()
-        return True
+    return True in box[starting_point[0], starting_point[1]:]
 
 def hit_8c(box, starting_point, direction):
   if direction == "nw":
