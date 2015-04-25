@@ -42,9 +42,9 @@ def get_cc_feats(image, cc_name):
       local_hist = local_cc_hist(box, "8c")
     else:
       local_hist = local_mixed_hist(box)
-    # print ("local_hist = {0}".format(local_hist))
+    
     # List concatenation
-    img_hist = img_hist + normalize(local_hist)
+    img_hist = img_hist + local_hist
   # print ("image hist = {0}".format(img_hist))
   return img_hist
 
@@ -72,7 +72,8 @@ def local_cc_hist(box, method_name):
           if hit_cc(box, point, directions[k]):
             bin_number += 2 ** k
         hist[bin_number] += 1
-  return hist
+  # print ("local_hist = {0}".format(hist))
+  return normalize(hist)
 
 def hit_cc(box, starting_point, direction):
   if direction in ["n", "s", "w", "e"]:
