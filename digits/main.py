@@ -138,7 +138,9 @@ def main():
   X = training_feats
   y = training_classes
 
-#OPTIMIZAR PARAMETROS
+  ### OPTIMIZAR PARAMETROS
+  #-----------------------------------------------------------------------------
+  
   # c, gamma, accuracy = optimize_parameters(X,y)
   # print("best c exp = "),
   # print(c)
@@ -146,13 +148,25 @@ def main():
   # print(gamma)
   # print("best accuracy = "),
   # print(accuracy)
+  #-----------------------------------------------------------------------------
 
   clf = SVC(kernel='rbf')
   start = time.time()
-  # clf.fit(X, y)
-  means = kmeans.get_means(X, y)
-  print ("means = \n {0}".format(means))
-  np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
+  
+  ### USANDO SVM
+  #-----------------------------------------------------------------------------
+
+  clf.fit(X, y)
+  #-----------------------------------------------------------------------------
+
+  ### USANDO K MEANS
+  #-----------------------------------------------------------------------------
+  
+  # means = kmeans.get_means(X, y)
+  # print ("means = \n {0}".format(means))
+  # np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
+  #-----------------------------------------------------------------------------
+
   end = time.time()
   print("Elapsed time training the classifier: {0} secs".format(end - start))
 
@@ -169,8 +183,19 @@ def main():
   start = time.time()
   X_test = testing_feats
   y_test_true = testing_classes
-  # y_test_predicted = clf.predict(X_test)
-  y_test_predicted = kmeans.classify(X_test, means)
+
+  ### USANDO SVM
+  #-----------------------------------------------------------------------------
+
+  y_test_predicted = clf.predict(X_test)
+  #-----------------------------------------------------------------------------
+
+  ### USANDO K MEANS
+  #-----------------------------------------------------------------------------
+  
+  # y_test_predicted = kmeans.classify(X_test, means)
+  #-----------------------------------------------------------------------------
+
   end = time.time()
   print("Elapsed time testing: {0} secs".format(end - start))
   
