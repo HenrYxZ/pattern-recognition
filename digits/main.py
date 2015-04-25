@@ -114,8 +114,8 @@ def main():
   dataset_option = input()
 
   if dataset_option == 1:
-    training_file_list = glob.glob("Images_MNIST/Train/*")
-    training_file_list = random.sample(training_file_list,20000)
+    training_file_list = glob.glob("Images_MNIST/Train/*")[0:2000]
+  # training_file_list = random.sample(training_file_list,20000)
   #  testing_file_list = glob.glob("Images_MNIST/Test/*")
   else :
     training_file_list = glob.glob("Images_CVL/train/*")[0:200]

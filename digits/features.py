@@ -33,33 +33,27 @@ def get_cc_feats(image, cc_name):
 
   img_hist = []
   for box in boxes:
-    print ("box {0}".format(box))
-    print ("box shape {0}".format(box.shape))
+    print ("box = {0}".format(box))
+    print ("box shape = {0}".format(box.shape))
     if (cc_name == "4c"):
-      local_hist = local_4c_hist(box)
+      local_hist = local_cc_hist(box, "4c")
     elif (cc_name == "8c"):
-      local_hist = local_8c_hist(box)
+      local_hist = local_cc_hist(box, "8c")
     else:
       local_hist = local_mixed_hist(box)
-    print ("local_hist {0}".format(local_hist))
+    print ("local_hist = {0}".format(local_hist))
     # List concatenation
     img_hist = img_hist + local_hist
+  img_hist = normalize(img_hist)
+  print ("normalized hist = {0}".format(img_hist))
   return img_hist
 
-def local_4c_hist(box):
-  directions = ["n", "s", "w", "e"]
-  return local_cc_hist(box, directions)
-
-def local_8c_hist(box):
-  directions = ["nw", "sw", "ne", "se"]
-  return local_cc_hist(box, directions)
-
 def local_mixed_hist(box):
-  hist_4c = local_cc_hist(box, ["n", "s", "w", "e"])
-  hist_8c = local_cc_hist(box, ["nw", "sw", "ne", "se"])
+  hist_4c = local_cc_hist(box, "4c")
+  hist_8c = local_cc_hist(box, "8c")
   return hist_4c + hist_8c
 
-def local_cc_hist(box, directions):
+def local_cc_hist(box, method_name):
   hist = [0] * 16
   # for each black point do this
   height, width = box.shape
@@ -70,6 +64,10 @@ def local_cc_hist(box, directions):
         print ("black point [{0}, {1}]".format(i, j))
         point = [i, j]
         bin_number = 0
+        if method_name == "4c":
+          directions = ["n", "s", "w", "e"]
+        else:
+          directions = ["nw", "sw", "ne", "se"]
         for k in range(len(directions)):
           if hit_cc(box, point, directions[k]):
             bin_number += 2 ** k
@@ -77,85 +75,105 @@ def local_cc_hist(box, directions):
   return hist
 
 def hit_cc(box, starting_point, direction):
+  if direction in ["n", "s", "w", "e"]:
+    return hit_4c(box, starting_point, direction)
+  else:
+    return hit_8c(box, starting_point, direction)
+
+def hit_4c(box, starting_point, direction):
   current_point = starting_point
-  # print ("current_point {0}".format(current_point))
   if direction == "n":
-    while in_limits(box, current_point):
-      print ("current_point = {0}".format(current_point))
+    while True:
       current_point[0] -= 1
       # If we hit something not background
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
-        sys.exit()
         return True
-    return False
   elif direction == "s":
     while in_limits(box, current_point):
       current_point[0] += 1
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
         return True
-    return False
   elif direction == "w":
     while in_limits(box, current_point):
       current_point[1] -= 1
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
         return True
-    return False
-  elif direction == "e":
+  else:
     while in_limits(box, current_point):
+      #print ("current_point = {0}".format(current_point))
       current_point[1] += 1
+      #print ("current_point 1 = {0}".format(current_point))
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
+        #print ("hit!")
+        #sys.exit()
         return True
-    return False
-  elif direction == "nw":
+
+def hit_8c(box, starting_point, direction):
+  if direction == "nw":
     while in_limits(box, current_point):
       current_point[0] -= 1
       current_point[1] -= 1
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       # If we hit something not background
       if box[row, col] == True:
         return True
-    return False
   elif direction == "sw":
     while in_limits(box, current_point):
       current_point[0] += 1
       current_point[1] -= 1
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
         return True
-    return False
   elif direction == "ne":
     while in_limits(box, current_point):
       current_point[0] -= 1
       current_point[1] += 1
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
         return True
-    return False
   else:
     while in_limits(box, current_point):
       current_point[0] += 1
       current_point[1] += 1
+      if not in_limits(box, current_point):
+        return False
       row = current_point[0]
       col = current_point[1]
       if box[row, col] == True:
         return True
-    return False
 
 def normalize(hist):
   total = sum(hist)
+  if total == 0:
+    return 0
   for i in range(len(hist)):
     hist[i] = hist[i] / total
+  return hist
 
 def in_limits(box, point):
   in_limits_rows = point[0] >= 0 and point[0] < len(box)
