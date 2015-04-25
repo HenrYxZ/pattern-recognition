@@ -1,9 +1,9 @@
 import numpy as np
 
-def get_means(X, k):
+def get_means(X, hint):
   D = len(X[0])
   n = len(X)
-  means = np.random.random_sample(size = (k, D))
+  means = hint
   changed = True
   assignation = [0] * n  
 

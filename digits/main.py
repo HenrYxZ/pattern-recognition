@@ -93,6 +93,16 @@ def get_dataset(feats_option, dataset_option, file_list):
     classes.append(get_class_from_file_path(file_path, dataset_option))
   return feats, np.array(classes)
 
+def get_hint(features, classes):
+  hint = None
+  current_class = 0
+  for i in range(len(classes)):
+    if classes[i] == current_class:
+      hint = np.vstack(hint, features[i])
+      current_class += 1
+      if current_class > 9:
+        break
+
 ################################################################################
 #             MAIN
 #-------------------------------------------------------------------------------
@@ -117,12 +127,13 @@ def main():
 
   if dataset_option == 1:
     training_file_list = glob.glob("Images_MNIST/Train/*")[0:250]
-    # training_file_list = random.sample(training_file_list,1000)
+    # training_file_list = random.sample(training_file_list, 1000)
     testing_file_list = glob.glob("Images_MNIST/Test/*")[0:250]
   else :
     training_file_list = glob.glob("Images_CVL/train/*")
-    # training_file_list = random.sample(training_file_list,1000)
-    testing_file_list = glob.glob("Images_CVL/test/*")[0:50]
+    training_file_list = random.sample(training_file_list, 1000)
+    testing_file_list = glob.glob("Images_CVL/test/*")
+    testing_file_list = random.sample(testing_file_list, 250)
 
   ##############################################################################
   ###########                      Training                          ###########
