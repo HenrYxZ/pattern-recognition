@@ -11,6 +11,7 @@ import random
 import math
 import time
 import kmeans
+import sys
 
 ###HOG OPTIONS
 bins = 8
@@ -117,13 +118,13 @@ def main():
 
   if dataset_option == 1:
     training_file_list = glob.glob("Images_MNIST/Train/*")
-    training_file_list = random.sample(training_file_list, 1000)
-    testing_file_list = glob.glob("Images_MNIST/Test/*")[0:1000]
+    training_file_list = random.sample(training_file_list, 20000)
+    testing_file_list = glob.glob("Images_MNIST/Test/*")
   else :
     training_file_list = glob.glob("Images_CVL/train/*")
-    training_file_list = random.sample(training_file_list, 1000)
+    # training_file_list = random.sample(training_file_list, 1000)
     testing_file_list = glob.glob("Images_CVL/test/*")
-    testing_file_list = random.sample(testing_file_list, 250)
+    # testing_file_list = random.sample(testing_file_list, 250)
 
   ##############################################################################
   ###########                      Training                          ###########
@@ -140,31 +141,34 @@ def main():
 
   ### OPTIMIZAR PARAMETROS
   #-----------------------------------------------------------------------------
-  
+  # start = time.time()
   # c, gamma, accuracy = optimize_parameters(X,y)
+  # end = time.time()
+  # print("Elapsed time optimizing: {0} secs".format(end - start))
   # print("best c exp = "),
   # print(c)
   # print("best gamma expc = "),
   # print(gamma)
   # print("best accuracy = "),
   # print(accuracy)
+  # sys.exit()
   #-----------------------------------------------------------------------------
 
-  clf = SVC(kernel='rbf')
+  clf = SVC(kernel='rbf', C=2**5, gamma=2**(-5))
   start = time.time()
   
   ### USANDO SVM
   #-----------------------------------------------------------------------------
 
-  clf.fit(X, y)
+  # clf.fit(X, y)
   #-----------------------------------------------------------------------------
 
   ### USANDO K MEANS
   #-----------------------------------------------------------------------------
   
-  # means = kmeans.get_means(X, y)
-  # print ("means = \n {0}".format(means))
-  # np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
+  means = kmeans.get_means(X, y)
+  print ("means = \n {0}".format(means))
+  np.savetxt("means.csv", means, fmt = "%.6f", delimiter = ",")
   #-----------------------------------------------------------------------------
 
   end = time.time()
@@ -187,13 +191,13 @@ def main():
   ### USANDO SVM
   #-----------------------------------------------------------------------------
 
-  y_test_predicted = clf.predict(X_test)
+  # y_test_predicted = clf.predict(X_test)
   #-----------------------------------------------------------------------------
 
   ### USANDO K MEANS
   #-----------------------------------------------------------------------------
   
-  # y_test_predicted = kmeans.classify(X_test, means)
+  y_test_predicted = kmeans.classify(X_test, means)
   #-----------------------------------------------------------------------------
 
   end = time.time()
