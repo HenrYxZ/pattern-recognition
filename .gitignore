@@ -3,6 +3,7 @@ skin-detector/imagenes/
 digits/Images_CVL/
 digits/Images_MNIST/
 img-retrieval/oxbuild-images/
+img-retrieval/groundtruth/
 
 # IDEs
 *.idea/
