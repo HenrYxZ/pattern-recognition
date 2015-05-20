@@ -1,3 +1,5 @@
+import cv2
+
 def get_distances(current_index, model, method="euclidean"):
 	''' Calculates the distances between the vlad vector in the current index
 	and the vlad of every other image. 
@@ -7,3 +9,17 @@ def get_distances(current_index, model, method="euclidean"):
 		model (Model): The object that contains the vlads of the images.
 	'''
 	pass
+
+def get_descriptors(gray_img):
+	''' Gets a list of 128 - dimensional descriptors using
+	SIFT and DoG for keypoints.
+
+	Args:
+		gray_img (grayscale matrix): The grayscale image that will be used.
+
+	Returns:
+		list of floats array: The descriptors found in the image.
+	'''
+	sift = cv2.SIFT()
+	kp, des = sift.detectAndCompute(gray_img, None)
+	return des
