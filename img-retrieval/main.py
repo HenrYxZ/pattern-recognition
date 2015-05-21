@@ -1,14 +1,24 @@
 import glob
-import cv2
+import train
+import test
+import utils
+import numpy as np
+from time import time
+from model import Model
 
 def main():
 	img_files = glob.glob("oxbuild-images/*.jpg")
 	
 	# Training
 	#---------------------------------------------------------------------------
-	
-	descriptors = train.get_descriptors(img_files)
-	clusters = train.get_clusters(descriptors)
+	start = time()
+	descriptors = train.get_descriptors(img_files[0:100])
+	end = time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time getting the descriptors {0}.".format(elapsed_time))
+	k = 64
+	clusters = train.get_clusters(k, descriptors)
+	np.savetxt("clusters64.csv", clusters, delimiter=",")
 	
 	# Testing
 	#---------------------------------------------------------------------------
