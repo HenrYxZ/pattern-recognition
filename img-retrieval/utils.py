@@ -10,7 +10,7 @@ def get_distances(current_index, model, method="euclidean"):
 	'''
 	pass
 
-def get_descriptors(gray_img):
+def get_descriptors(gray_img, resize=0):
 	''' Gets a list of 128 - dimensional descriptors using
 	SIFT and DoG for keypoints.
 
@@ -20,6 +20,17 @@ def get_descriptors(gray_img):
 	Returns:
 		list of floats array: The descriptors found in the image.
 	'''
+	if resize > 0:
+		h, w = gray_img.shape
+		if h > resize or w > resize:
+			if h > w:
+				new_h = 640
+				new_w = (640 * w) / h
+			else:
+				new_h = (640 * h) / w
+				new_w = 640
+			gray_img = cv2.resize(gray_img, (new_h, new_w))
+		print ("img resized to {0}, {1}".format(new_h, new_w))
 	sift = cv2.SIFT()
 	kp, des = sift.detectAndCompute(gray_img, None)
 	return des
