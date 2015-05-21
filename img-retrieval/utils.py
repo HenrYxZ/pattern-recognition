@@ -30,7 +30,6 @@ def get_descriptors(gray_img, resize=0):
 				new_h = (640 * h) / w
 				new_w = 640
 			gray_img = cv2.resize(gray_img, (new_h, new_w))
-		print ("img resized to {0}, {1}".format(new_h, new_w))
 	sift = cv2.SIFT()
 	kp, des = sift.detectAndCompute(gray_img, None)
 	return des

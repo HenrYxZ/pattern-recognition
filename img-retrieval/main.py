@@ -12,20 +12,19 @@ def main():
 	# Training
 	#---------------------------------------------------------------------------
 	# Extracting descriptors
-	resize_to = 640
 	start = time()
-	descriptors = train.get_descriptors(img_files[0:100], resize=resize_to)
+	descriptors = train.get_descriptors(img_files[0:100])
 	end = time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time getting the descriptors {0}.".format(elapsed_time))
 	# Clustering
-	# k = 64
-	# start = time()
-	# clusters = train.get_clusters(k, descriptors)
-	# end = time()
-	# elapsed_time = utils.humanize_time(end - start)
-	# print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
-	# np.savetxt("clusters64.csv", clusters, delimiter=",")
+	k = 64
+	start = time()
+	clusters = train.get_clusters(k, descriptors)
+	end = time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
+	np.savetxt("clusters64.csv", clusters, delimiter=",")
 	
 	# Testing
 	#---------------------------------------------------------------------------

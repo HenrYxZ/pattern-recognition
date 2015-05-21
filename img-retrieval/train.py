@@ -14,15 +14,16 @@ def get_descriptors(img_files):
 	'''
 	descriptors = None
 	files_count = len(img_files)
+	step = (5 * files_count) / 100
+	resize_to = 640
 	for i in range(files_count):
 		filename = img_files[i]
 		gray_img = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-		current_img_des = utils.get_descriptors(gray_img)
+		current_img_des = utils.get_descriptors(gray_img, resize=resize_to)
 		if descriptors is None:
 			descriptors = current_img_des
 		else:
 			descriptors = np.vstack((descriptors, current_img_des))
-		step = (5 * files_count) / 100
 		if i % step == 0:
 			percentage = (i * 100) / files_count
 			print(
@@ -46,14 +47,10 @@ def get_clusters(k, descriptors):
 		list of floats array: Each array is a cluster mean vector (D = 128).
 	'''
 	# Sacar random sample de 100k
-	indices = np.arange(len(descriptors))
-	np.random.shuffle(indices)
+	n_rows = matrix.shape[0]
 	sample_size = 100000
-	indices = indices[:sample_size]
-	sample = descriptors[indices[0]]
-	for i in range(1, sample_size):
-		index = indices[i]
-		sample = np.vstack((sample, descriptors[index]))
+    indices = np.random.choice(n_rows, sample_size)
+	sample = descriptors[indices, :]
 	print("Sample of shape: {0}".format(sample.shape))
 	# Clusterizar
 	kmeans = KMeans(n_clusters=k)
