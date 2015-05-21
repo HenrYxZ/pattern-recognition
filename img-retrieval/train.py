@@ -1,6 +1,7 @@
 import cv2
 import utils
 import numpy as np
+from sklearn.cluster import KMeans
 
 def get_descriptors(img_files):
 	''' Gets the descriptors for every image in the list and concatenates them.
@@ -30,7 +31,6 @@ def get_descriptors(img_files):
 				)
 			)
 	print("Descriptors of shape: {0}".format(descriptors.shape))
-	print("Descriptors of type: {0}".format(descriptors.dtype))
 	return descriptors
 
 def get_clusters(k, descriptors):
@@ -49,9 +49,13 @@ def get_clusters(k, descriptors):
 	indices = np.arange(len(descriptors))
 	np.random.shuffle(indices)
 	sample_size = 100000
-	sample = indices[:sample_size]
+	indices = indices[:sample_size]
+	sample = descriptors[indices[0]]
+	for i in range(1, sample_size):
+		index = indices[i]
+		sample = np.vstack((sample, descriptors[index]))
+	print("Sample of shape: {0}".format(sample.shape))
 	# Clusterizar
-	criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1)
-	ret, label, center = cv2.kmeans(
-		sample, k, criteria, 30, cv2.KMEANS_RANDOM_CENTERS
-	)
+	kmeans = KMeans(n_clusters=k)
+	kmeans.fit(sample)
+	return kmeans.cluster_centers_
