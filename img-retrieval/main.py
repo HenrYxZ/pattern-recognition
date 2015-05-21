@@ -7,7 +7,7 @@ from time import time
 from model import Model
 
 def main():
-	img_files = glob.glob("oxbuild-images/*.jpg")
+	img_files = glob.glob("/home/lucas/Copy/Cursos PUC/patrones/imagenes tarea 3/images/*.jpg")
 	
 	# Training
 	#---------------------------------------------------------------------------
