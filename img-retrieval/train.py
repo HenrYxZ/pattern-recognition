@@ -18,8 +18,6 @@ def get_descriptors(img_files):
 	resize_to = 640
 	for i in range(files_count):
 		filename = img_files[i]
-		is_query = True
-		while is_query and i < files_count:
 		gray_img = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 		current_img_des = utils.get_descriptors(gray_img, resize=resize_to)
 		if descriptors is None:

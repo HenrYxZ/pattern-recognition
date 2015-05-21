@@ -13,7 +13,7 @@ def main():
 	files_for_codebook = img_files
 	for index in query_indices:
 		del files_for_codebook[index]
-	
+
 	# Training
 	#---------------------------------------------------------------------------
 	# Extracting descriptors
