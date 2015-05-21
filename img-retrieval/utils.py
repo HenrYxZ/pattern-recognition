@@ -1,4 +1,5 @@
 import cv2
+import glob
 
 def get_distances(current_index, model, method="euclidean"):
 	''' Calculates the distances between the vlad vector in the current index
@@ -7,6 +8,9 @@ def get_distances(current_index, model, method="euclidean"):
 	Args:
 		current_index (int): The index for the current image.
 		model (Model): The object that contains the vlads of the images.
+
+	Returns:
+		numpy array of floats: The distances to each other image vlad's. 
 	'''
 	pass
 
@@ -33,6 +37,41 @@ def get_descriptors(gray_img, resize=0):
 	sift = cv2.SIFT()
 	kp, des = sift.detectAndCompute(gray_img, None)
 	return des
+
+def get_images_names(img_files):
+	''' Gets the names for the images in order. For example "all_souls_000013".
+
+	Args:
+		img_files (list of strings): The paths for every image in the dataset.
+
+	Returns:
+		list of strings: The names without the folder path and the extension.
+	'''
+	if "/" in img_files[0]:
+		separator = "/"
+	else:
+		separator = "\\"
+	return [path.split(separator)[-1].split(".")[0] for path in img_files]
+
+def get_queries(img_names):
+	''' Gets the 55 query image names that are included in the dataset.
+
+	Args:
+		img_names (list of strings): The names of the images in order.
+
+	Returns:
+		list of int: indices of the query images.
+	'''
+	filenames = glob.glob("groundtruth/*_query.txt")
+	indices = []
+	for fname in filenames:
+		with open(fname) as f:
+			name = f.readline().split(" ")[0]
+		# Because names are in the format "oxc1_name"
+		name = name[5:]
+		indices.append(img_names.index(name))
+	return indices
+
 
 def humanize_time(secs):
 	'''

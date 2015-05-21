@@ -7,13 +7,18 @@ from time import time
 from model import Model
 
 def main():
-	img_files = glob.glob("/home/lucas/Copy/Cursos PUC/patrones/imagenes tarea 3/images/*.jpg")
+	img_files = glob.glob("oxbuild-images/*.jpg")
+	img_names = utils.get_images_names(img_files)
+	query_indices = utils.get_queries(img_names)
+	files_for_codebook = img_files
+	for index in query_indices:
+		del files_for_codebook[index]
 	
 	# Training
 	#---------------------------------------------------------------------------
 	# Extracting descriptors
 	start = time()
-	descriptors = train.get_descriptors(img_files[0:100])
+	descriptors = train.get_descriptors(files_for_codebook)
 	end = time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time getting the descriptors {0}.".format(elapsed_time))
@@ -25,6 +30,21 @@ def main():
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
 	np.savetxt("clusters64.csv", clusters, delimiter=",")
+	k = 128
+	start = time()
+	clusters = train.get_clusters(k, descriptors)
+	end = time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
+	np.savetxt("clusters128.csv", clusters, delimiter=",")
+	k = 256
+	start = time()
+	clusters = train.get_clusters(k, descriptors)
+	end = time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
+	np.savetxt("clusters256.csv", clusters, delimiter=",")
+
 	
 	# Testing
 	#---------------------------------------------------------------------------
