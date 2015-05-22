@@ -4,7 +4,7 @@ import numpy as np
 import cPickle as pickle
 from sklearn.cluster import KMeans
 
-def get_descriptors(img_files):
+def calculate_descriptors(img_files):
 	''' Gets the descriptors for every image in the input. Stores them in files.
 
 	Args:
