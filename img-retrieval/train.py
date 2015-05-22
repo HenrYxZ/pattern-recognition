@@ -81,6 +81,7 @@ def get_clusters(k, sample):
 
 	Args:
 		k (int): The number of clusters.
+		sample (numpy matrix of float32): The 100k descriptors sample.
 
 	Returns:
 		list of floats array: Each array is a cluster mean vector (D = 128).
