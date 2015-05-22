@@ -26,12 +26,19 @@ def main():
 	# end = time()
 	# elapsed_time = utils.humanize_time(end - start)
 	# print("Elapsed time getting the descriptors {0}.".format(elapsed_time))
+
+	# Get the sample of 100k descriptors
+	start = time()
+	sample = train.get_sample()
+	end = time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time getting the sample {0}.".format(elapsed_time))
 	
 	# Clustering
 	
 	k = 64
 	start = time()
-	clusters = train.get_clusters(k)
+	clusters = train.get_clusters(k, sample)
 	end = time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
@@ -39,7 +46,7 @@ def main():
 	
 	k = 128
 	start = time()
-	clusters = train.get_clusters(k)
+	clusters = train.get_clusters(k, sample)
 	end = time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))
@@ -47,7 +54,7 @@ def main():
 	
 	k = 256
 	start = time()
-	clusters = train.get_clusters(k)
+	clusters = train.get_clusters(k, sample)
 	end = time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time clustering for k={0} {1}".format(k, elapsed_time))

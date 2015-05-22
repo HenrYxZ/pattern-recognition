@@ -51,17 +51,7 @@ def calculate_descriptors(img_files):
 			descriptors = None
 	return descriptors_count
 
-def get_clusters(k):
-	''' Calculates the k clusters centers which are going to be the codewords
-	for our codebook. It only uses a random sample of 100k of the descriptors
-	and applies the k-means clustering algorithm to them.
-
-	Args:
-		k (int): The number of clusters.
-
-	Returns:
-		list of floats array: Each array is a cluster mean vector (D = 128).
-	'''
+def get_sample():
 	# Sacar random sample de 100k
 	des_files = glob.glob("des_*")
 	file_indices = [int(des_f.split("_")[1]) for des_f in des_files]
@@ -80,7 +70,21 @@ def get_clusters(k):
 	sample_size = 100000
 	np.random.shuffle(sample_indices)
 	sample = utils.read_des_files(sample_indices[:sample_size])
+	pickle.dump(sample, open("sample.np", "wb"), protocol=2)
 	print("Sample of shape: {0}".format(sample.shape))
+	return sample
+
+def get_clusters(k, sample):
+	''' Calculates the k clusters centers which are going to be the codewords
+	for our codebook. It only uses a random sample of 100k of the descriptors
+	and applies the k-means clustering algorithm to them.
+
+	Args:
+		k (int): The number of clusters.
+
+	Returns:
+		list of floats array: Each array is a cluster mean vector (D = 128).
+	'''
 	# Clusterizar
 	kmeans = KMeans(n_clusters=k)
 	kmeans.fit(sample)
