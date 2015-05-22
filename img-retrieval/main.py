@@ -7,8 +7,11 @@ from time import time
 from model import Model
 
 def main():
+	# img_files = ['oxbuild-images/all_souls_000000.jpg', ...]
 	img_files = glob.glob("oxbuild-images/*.jpg")
+	# img_names = ['all_souls_000000', ...]
 	img_names = utils.get_images_names(img_files)
+	# query_indices = [11, 21, ...]
 	query_indices = utils.get_queries(img_names)
 	files_for_codebook = img_files
 	for index in query_indices:
