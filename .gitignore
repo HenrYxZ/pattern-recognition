@@ -1,9 +1,10 @@
-# Images
+# Images and files
 skin-detector/imagenes/
 digits/Images_CVL/
 digits/Images_MNIST/
 img-retrieval/oxbuild-images/
 img-retrieval/groundtruth/
+img-retrieval/des_*
 
 # IDEs
 *.idea/
