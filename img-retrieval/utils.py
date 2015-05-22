@@ -72,6 +72,25 @@ def get_queries(img_names):
 		indices.append(img_names.index(name))
 	return indices
 
+def read_desc_files(sample):
+	descriptors = []
+	sample.sort()
+	desc_files = glob.glob("desc_*")
+	separators = [fname.split(".")[0].split("_")[-1] for fname in desc_files]
+	indices = [] * len(desc_files)
+	counter = 0
+	for index in sample:
+		if index <= separators[counter]:
+			indices[counter].append(index)
+		else:
+			counter += 1
+			indices[counter].append(index)
+	for i in range(len(indices)):
+		if len(indices[i]) > 0:
+			this_descs = pickle.load(open(desc_files[i], "rb"))
+			for index in indices[i]:
+				descriptors.append(this_descs[index])
+	return np.array(descriptors)
 
 def humanize_time(secs):
 	'''
