@@ -21,11 +21,12 @@ def main():
 	#---------------------------------------------------------------------------
 	# Extracting descriptors
 	
-	start = time()
-	descriptors_count = train.calculate_descriptors(files_for_codebook)
-	end = time()
-	elapsed_time = utils.humanize_time(end - start)
-	print("Elapsed time getting the descriptors {0}.".format(elapsed_time))
+	# start = time()
+	# descriptors_count = train.calculate_descriptors(files_for_codebook)
+	# end = time()
+	# elapsed_time = utils.humanize_time(end - start)
+	# print("Elapsed time getting the descriptors {0}.".format(elapsed_time))
+	
 	# Clustering
 	
 	k = 64

@@ -1,5 +1,9 @@
 import cv2
 import glob
+import sys
+import cPickle as pickle
+import numpy as np
+import time
 
 def get_distances(current_index, model, method="euclidean"):
 	''' Calculates the distances between the vlad vector in the current index
@@ -72,24 +76,39 @@ def get_queries(img_names):
 		indices.append(img_names.index(name))
 	return indices
 
-def read_desc_files(sample):
-	descriptors = []
+def read_des_files(sample):
+	descriptors = None
 	sample.sort()
-	desc_files = glob.glob("desc_*")
-	separators = [fname.split(".")[0].split("_")[-1] for fname in desc_files]
-	indices = [] * len(desc_files)
+	des_files = glob.glob("des_*")
+	separators = []
+	for filename in des_files:
+		max_index = int(filename.split(".")[0].split("_")[-1])
+		min_index = int(filename.split(".")[0].split("_")[2])
+		separators.append((filename, max_index, min_index))
+	sorted_separators = sorted(separators, key=get_key)
+	indices = [[] for i in range(len(des_files))]
 	counter = 0
 	for index in sample:
-		if index <= separators[counter]:
+		if index <= sorted_separators[counter][1]:
 			indices[counter].append(index)
 		else:
 			counter += 1
 			indices[counter].append(index)
 	for i in range(len(indices)):
+		# If there are descriptors for this file
+		print("Reading file number {0} of {1}".format(i, len(indices)))
 		if len(indices[i]) > 0:
-			this_descs = pickle.load(open(desc_files[i], "rb"))
+			this_des = pickle.load(open(sorted_separators[i][0], "rb"))
+			# Get the descriptors indexed in the sample
 			for index in indices[i]:
-				descriptors.append(this_descs[index])
+				relative_index = index - sorted_separators[i][2]
+				if descriptors is None:
+					descriptors = this_des[relative_index]
+				else:
+					descriptors = np.vstack(
+						(descriptors, this_des[relative_index])
+					)
+	print ("Descriptors matrix of shape: ".format(descriptors.shape))
 	return np.array(descriptors)
 
 def humanize_time(secs):
@@ -99,3 +118,6 @@ def humanize_time(secs):
 	mins, secs = divmod(secs, 60)
 	hours, mins = divmod(mins, 60)
 	return '%02d:%02d:%02d' % (hours, mins, secs)
+
+def get_key(x):
+	return x[1]

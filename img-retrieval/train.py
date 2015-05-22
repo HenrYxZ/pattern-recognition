@@ -2,6 +2,7 @@ import cv2
 import utils
 import numpy as np
 import cPickle as pickle
+import glob
 from sklearn.cluster import KMeans
 
 def calculate_descriptors(img_files):
@@ -13,10 +14,10 @@ def calculate_descriptors(img_files):
 	Returns:
 		int: number of descriptors.
 	'''
-	descriptors = []
+	descriptors = None
 	files_count = len(img_files)
 	step = (5 * files_count) / 100
-	max_size = 300
+	max_size = 250
 	descriptors_count = 0
 	min_desc_ind = 0
 	max_desc_ind = 0
@@ -27,7 +28,10 @@ def calculate_descriptors(img_files):
 		gray_img = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 		current_img_des = utils.get_descriptors(gray_img, resize=resize_to)
 		descriptors_count += len(current_img_des)
-		descriptors.append(current_img_des)
+		if descriptors is None:
+			descriptors = current_img_des
+		else:
+			descriptors = np.vstack((descriptors, current_img_des))
 		if i % step == 0:
 			percentage = (i * 100) / files_count
 			print(
@@ -36,12 +40,15 @@ def calculate_descriptors(img_files):
 				)
 			)
 		# Stores the descriptors in a file to avoid memory errors
-		if i % max_size == 0 and i > 299:
-			max_desc_ind = len(descriptors) - 1
-			storage_name = "des_{0}_{1}.np".format(min_desc_ind, max_desc_ind)
-			pickle.dump(descriptors, open(storage_name, "wb"))
-			min_desc_ind = len(descriptors)
-			descriptors = []
+		if i % max_size == 0 and i > 0:
+			max_desc_ind = descriptors_count - 1
+			storage_count = i / max_size
+			storage_name = "des_{0}_{1}_{2}.np".format(
+				storage_count, min_desc_ind, max_desc_ind
+			)
+			pickle.dump(descriptors, open(storage_name, "wb"), protocol=2)
+			min_desc_ind += len(descriptors)
+			descriptors = None
 	return descriptors_count
 
 def get_clusters(k):
@@ -56,10 +63,23 @@ def get_clusters(k):
 		list of floats array: Each array is a cluster mean vector (D = 128).
 	'''
 	# Sacar random sample de 100k
-	n_rows = matrix.shape[0]
+	des_files = glob.glob("des_*")
+	file_indices = [int(des_f.split("_")[1]) for des_f in des_files]
+	max_index = 0
+	max_value = 0
+	for i in range(len(file_indices)):
+		current_value = file_indices[i]
+		if current_value > max_value:
+			max_value = current_value
+			max_index = i
+	last_file = des_files[max_index]
+	print ("Last file is: {0}".format(last_file))
+	des_count = int(last_file.split(".")[0].split("_")[-1])
+	print ("Descriptors count is: {0}".format(des_count))
+	sample_indices = np.arange(des_count)
 	sample_size = 100000
-	sample_indices = np.random.choice(n_rows, sample_size)
-	sample = utils.read_desc_files(sample_indices)
+	np.random.shuffle(sample_indices)
+	sample = utils.read_des_files(sample_indices[:sample_size])
 	print("Sample of shape: {0}".format(sample.shape))
 	# Clusterizar
 	kmeans = KMeans(n_clusters=k)

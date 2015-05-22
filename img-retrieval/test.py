@@ -14,12 +14,8 @@ def get_ranking(vlad, model):
 	tuples = []
 	for i in range(len(distances)):
 		tuples.append((i, distances))
-	sorted_tuples = sorted(tuples, key=get_key)
+	sorted_tuples = sorted(tuples, key=utils.get_key)
 	return [sorted_tuples[i][1] for i in range(len(distances))]
 
 def get_groundtruth():
 	pass
-	
-
-def get_key(x):
-	return x[1]
