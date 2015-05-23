@@ -5,6 +5,8 @@ digits/Images_MNIST/
 img-retrieval/oxbuild-images/
 img-retrieval/groundtruth/
 img-retrieval/des_*
+img-retrieval/vlad*
+
 
 # IDEs
 *.idea/

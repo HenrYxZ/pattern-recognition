@@ -5,6 +5,13 @@ import cPickle as pickle
 import glob
 from sklearn.cluster import KMeans
 
+
+def get_descriptor_from_image_path(path):
+    resize_to = 640
+    gray_img = cv2.imread(path, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    return utils.get_descriptors(gray_img, resize=resize_to)
+
+
 def calculate_descriptors(img_files):
 	''' Gets the descriptors for every image in the input. Stores them in files.
 
