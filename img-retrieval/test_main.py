@@ -47,13 +47,14 @@ def main():
     # print(np.average(precisions))
 
 #128
+
+
+#256
     # print("leyendo codebook...")
-    # codebook = np.loadtxt("clusters128.csv", delimiter=",")
+    # codebook = np.loadtxt("clusters256.csv", delimiter=",")
     # print("leyendo vlad matrix...")
-    # vlad = np.loadtxt("vlad128.csv", delimiter=",")
+    # vlad = np.loadtxt("vlad256.csv", delimiter=",")
     # print("listo")
-    # print("vlad matrix shape: ")
-    # print(vlad.shape)
     # test = Test(vlad,codebook,img_names,"euclidean")
     # precisions = []
     # for lm in land_marks:
@@ -61,7 +62,7 @@ def main():
     #         index = str(i+1)
     #         precision = test.do_query(lm + "_" + index)
     #         precisions.append(precision)
-    # print("128 euclidean map = "),
+    # print("256 euclidean map = "),
     # print(np.average(precisions))
     #
     # test = Test(vlad,codebook,img_names,"hellinger")
@@ -71,34 +72,8 @@ def main():
     #         index = str(i+1)
     #         precision = test.do_query(lm + "_" + index)
     #         precisions.append(precision)
-    # print("128 hellinger map = "),
+    # print("256 hellinger map = "),
     # print(np.average(precisions))
-
-#256
-    print("leyendo codebook...")
-    codebook = np.loadtxt("clusters256.csv", delimiter=",")
-    print("leyendo vlad matrix...")
-    vlad = np.loadtxt("vlad256.csv", delimiter=",")
-    print("listo")
-    test = Test(vlad,codebook,img_names,"euclidean")
-    precisions = []
-    for lm in land_marks:
-        for i in range(5):
-            index = str(i+1)
-            precision = test.do_query(lm + "_" + index)
-            precisions.append(precision)
-    print("256 euclidean map = "),
-    print(np.average(precisions))
-
-    test = Test(vlad,codebook,img_names,"hellinger")
-    precisions = []
-    for lm in land_marks:
-        for i in range(5):
-            index = str(i+1)
-            precision = test.do_query(lm + "_" + index)
-            precisions.append(precision)
-    print("256 hellinger map = "),
-    print(np.average(precisions))
 
 
 if __name__ == "__main__":

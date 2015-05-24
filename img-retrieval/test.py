@@ -20,6 +20,13 @@ class Test:
         query.plot()
         return precision
 
+    def do_query_and_get_ranking(self, query_name):
+        query = Query(self.vlad_matrix,self.codebook,self.files_names, self.distance_type, query_name)
+        #query.print_query()
+        query.calculate_ranking()
+        ranking = query.ranking
+        return np.array(query.files_names)[ranking]
+
 
 class Query:
     def __init__(self, vlad_matrix, codebook, files_names, distance_type, query_name):

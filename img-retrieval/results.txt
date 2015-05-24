@@ -1,6 +1,9 @@
 64 euclidean map =  0.351152223669
 64 hellinger map =  0.14788034679
 
+128 euclidean map =  0.00216118554176
+128 hellinger map =  0.00351255982853
+
 256 euclidean map =  0.412359524441
 256 hellinger map =  0.0929983877744
 

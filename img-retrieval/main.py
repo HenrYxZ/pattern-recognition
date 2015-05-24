@@ -7,6 +7,11 @@ from time import time
 from model import Model
 from vlad import Vlad
 
+import numpy as np
+import utils
+import glob
+from test import Test
+
 def main():
     # img_files = ['oxbuild-images/all_souls_000000.jpg', ...]
     img_files = glob.glob("oxbuild-images/*.jpg")
@@ -65,46 +70,46 @@ def main():
 
     # Vlad
     #k = 64
-    clusters = np.loadtxt("clusters64.csv", delimiter=",")
-    vlad = Vlad(clusters, 64)
-    vlad_matrix = None
-    i = 0
-    start = time()
-    for image_path in files_for_codebook:
-        print(str(i) +  "/" + str(len(files_for_codebook)))
-        descriptors = train.get_descriptor_from_image_path(image_path)
-
-        vlad_imagen = vlad.get_image_vlad(descriptors)
-        if vlad_matrix is None:
-            vlad_matrix = vlad_imagen
-        else:
-            vlad_matrix = np.vstack((vlad_matrix,vlad_imagen))
-        i += 1
-    end = time()
-    elapsed_time = utils.humanize_time(end - start)
-    print("Elapsed time vlad {0}.".format(elapsed_time))
-    np.savetxt("vlad64.csv",vlad_matrix,delimiter=",")
-
-    #k = 256
-    clusters = np.loadtxt("clusters256.csv", delimiter=",")
-    vlad = Vlad(clusters, 64)
-    vlad_matrix = None
-    i = 0
-    start = time()
-    for image_path in files_for_codebook:
-        print(str(i) +  "/" + str(len(files_for_codebook)))
-        descriptors = train.get_descriptor_from_image_path(image_path)
-
-        vlad_imagen = vlad.get_image_vlad(descriptors)
-        if vlad_matrix is None:
-            vlad_matrix = vlad_imagen
-        else:
-            vlad_matrix = np.vstack((vlad_matrix,vlad_imagen))
-        i += 1
-    end = time()
-    elapsed_time = utils.humanize_time(end - start)
-    print("Elapsed time vlad {0}.".format(elapsed_time))
-    np.savetxt("vlad256.csv",vlad_matrix,delimiter=",")
+    # clusters = np.loadtxt("clusters64.csv", delimiter=",")
+    # vlad = Vlad(clusters, 64)
+    # vlad_matrix = None
+    # i = 0
+    # start = time()
+    # for image_path in files_for_codebook:
+    #     print(str(i) +  "/" + str(len(files_for_codebook)))
+    #     descriptors = train.get_descriptor_from_image_path(image_path)
+    #
+    #     vlad_imagen = vlad.get_image_vlad(descriptors)
+    #     if vlad_matrix is None:
+    #         vlad_matrix = vlad_imagen
+    #     else:
+    #         vlad_matrix = np.vstack((vlad_matrix,vlad_imagen))
+    #     i += 1
+    # end = time()
+    # elapsed_time = utils.humanize_time(end - start)
+    # print("Elapsed time vlad {0}.".format(elapsed_time))
+    # np.savetxt("vlad64.csv",vlad_matrix,delimiter=",")
+    #
+    # #k = 256
+    # clusters = np.loadtxt("clusters256.csv", delimiter=",")
+    # vlad = Vlad(clusters, 64)
+    # vlad_matrix = None
+    # i = 0
+    # start = time()
+    # for image_path in files_for_codebook:
+    #     print(str(i) +  "/" + str(len(files_for_codebook)))
+    #     descriptors = train.get_descriptor_from_image_path(image_path)
+    #
+    #     vlad_imagen = vlad.get_image_vlad(descriptors)
+    #     if vlad_matrix is None:
+    #         vlad_matrix = vlad_imagen
+    #     else:
+    #         vlad_matrix = np.vstack((vlad_matrix,vlad_imagen))
+    #     i += 1
+    # end = time()
+    # elapsed_time = utils.humanize_time(end - start)
+    # print("Elapsed time vlad {0}.".format(elapsed_time))
+    # np.savetxt("vlad256.csv",vlad_matrix,delimiter=",")
 
 
 
@@ -115,6 +120,26 @@ def main():
     #---------------------------------------------------------------------------
 
     # Hacer queries
+    #64
+    print("leyendo codebook de 64 clusters...")
+    codebook = np.loadtxt("clusters64.csv", delimiter=",")
+    print("leyendo vlad matrix...")
+    vlad = np.loadtxt("vlad64.csv", delimiter=",")
+    print("listo")
+    test = Test(vlad,codebook,img_names,"euclidean")
+    query_name = ""
+    ranking = test.do_query_and_get_ranking(query_name)
+    np.savetxt("ranking" +  query_name, ranking,delimiter=",")
+    #128
+    print("leyendo codebook de 128 clusters...")
+    codebook = np.loadtxt("clusters128.csv", delimiter=",")
+    print("leyendo vlad matrix...")
+    vlad = np.loadtxt("vlad128.csv", delimiter=",")
+    print("listo")
+    test = Test(vlad,codebook,img_names,"euclidean")
+    query_name = ""
+    ranking = test.do_query_and_get_ranking(query_name)
+    np.savetxt("ranking" +  query_name, ranking,delimiter=",")
 
 
 
