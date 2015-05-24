@@ -21,11 +21,41 @@ def main():
     land_marks = ['all_souls','ashmolean','balliol','bodleian','christ_church','cornmarket','hertford','keble','magdalen','pitt_rivers','radcliffe_camera']
 
 #64
+    print("leyendo codebook...")
+    codebook = np.loadtxt("clusters64.csv", delimiter=",")
+    print("leyendo vlad matrix...")
+    vlad = np.loadtxt("vlad64.csv", delimiter=",")
+    print("listo")
+    print("vlad matrix shape: ")
+    print(vlad.shape)
+    test = Test(vlad,codebook,img_names,"euclidean")
+    precisions = []
+    for lm in land_marks:
+        for i in range(5):
+            index = str(i+1)
+            precision = test.do_query(lm + "_" + index)
+            precisions.append(precision)
+    print("64 euclidean map = "),
+    print(np.average(precisions))
+
+    test = Test(vlad,codebook,img_names,"hellinger")
+    precisions = []
+    for lm in land_marks:
+        for i in range(5):
+            index = str(i+1)
+            precision = test.do_query(lm + "_" + index)
+            precisions.append(precision)
+    print("64 hellinger map = "),
+    print(np.average(precisions))
+
+#128
     # print("leyendo codebook...")
-    # codebook = np.loadtxt("clusters64.csv", delimiter=",")
+    # codebook = np.loadtxt("clusters128.csv", delimiter=",")
     # print("leyendo vlad matrix...")
-    # vlad = np.loadtxt("vlad64.csv", delimiter=",")
+    # vlad = np.loadtxt("vlad128.csv", delimiter=",")
     # print("listo")
+    # print("vlad matrix shape: ")
+    # print(vlad.shape)
     # test = Test(vlad,codebook,img_names,"euclidean")
     # precisions = []
     # for lm in land_marks:
@@ -33,7 +63,7 @@ def main():
     #         index = str(i+1)
     #         precision = test.do_query(lm + "_" + index)
     #         precisions.append(precision)
-    # print("64 euclidean map = "),
+    # print("128 euclidean map = "),
     # print(np.average(precisions))
     #
     # test = Test(vlad,codebook,img_names,"hellinger")
@@ -43,11 +73,8 @@ def main():
     #         index = str(i+1)
     #         precision = test.do_query(lm + "_" + index)
     #         precisions.append(precision)
-    # print("64 hellinger map = "),
+    # print("128 hellinger map = "),
     # print(np.average(precisions))
-
-#128
-
 
 #256
     # print("leyendo codebook...")

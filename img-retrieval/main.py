@@ -11,6 +11,7 @@ import numpy as np
 import utils
 import glob
 from test import Test
+import pickle
 
 def main():
     # img_files = ['oxbuild-images/all_souls_000000.jpg', ...]
@@ -121,15 +122,18 @@ def main():
 
     # Hacer queries
     #64
+    query_name = "hertford_4"
     print("leyendo codebook de 64 clusters...")
     codebook = np.loadtxt("clusters64.csv", delimiter=",")
     print("leyendo vlad matrix...")
     vlad = np.loadtxt("vlad64.csv", delimiter=",")
     print("listo")
     test = Test(vlad,codebook,img_names,"euclidean")
-    query_name = ""
     ranking = test.do_query_and_get_ranking(query_name)
-    np.savetxt("ranking" +  query_name, ranking,delimiter=",")
+    print("ranking: ")
+    print(ranking)
+    file_name = "ranking_"+query_name+"_64"
+    list_to_file(ranking.tolist(),file_name)
     #128
     print("leyendo codebook de 128 clusters...")
     codebook = np.loadtxt("clusters128.csv", delimiter=",")
@@ -137,10 +141,26 @@ def main():
     vlad = np.loadtxt("vlad128.csv", delimiter=",")
     print("listo")
     test = Test(vlad,codebook,img_names,"euclidean")
-    query_name = ""
     ranking = test.do_query_and_get_ranking(query_name)
-    np.savetxt("ranking" +  query_name, ranking,delimiter=",")
+    file_name = "ranking_"+query_name+"_128"
+    list_to_file(ranking.tolist(),file_name)
+    #255
+    print("leyendo codebook de 256 clusters...")
+    codebook = np.loadtxt("clusters256.csv", delimiter=",")
+    print("leyendo vlad matrix...")
+    vlad = np.loadtxt("vlad256.csv", delimiter=",")
+    print("listo")
+    test = Test(vlad,codebook,img_names,"euclidean")
+    ranking = test.do_query_and_get_ranking(query_name)
+    file_name = "ranking_"+query_name+"_256"
+    list_to_file(ranking.tolist(),file_name)
 
+
+def list_to_file(list,file_name):
+    f=open(file_name,'w')
+    for ele in list:
+        f.write(ele+'\n')
+    f.close()
 
 
 if __name__ == '__main__':
