@@ -17,6 +17,7 @@ def main():
     files_for_codebook = img_files
     for index in query_indices:
         del files_for_codebook[index]
+        del img_names[index]
 
     # Training
     #---------------------------------------------------------------------------
@@ -63,26 +64,47 @@ def main():
 
 
     # Vlad
-    clusters = np.loadtxt("clusters128.csv", delimiter=",")
+    #k = 64
+    clusters = np.loadtxt("clusters64.csv", delimiter=",")
     vlad = Vlad(clusters, 64)
-
     vlad_matrix = None
     i = 0
     start = time()
     for image_path in files_for_codebook:
         print(str(i) +  "/" + str(len(files_for_codebook)))
         descriptors = train.get_descriptor_from_image_path(image_path)
+
         vlad_imagen = vlad.get_image_vlad(descriptors)
         if vlad_matrix is None:
             vlad_matrix = vlad_imagen
         else:
             vlad_matrix = np.vstack((vlad_matrix,vlad_imagen))
-
         i += 1
     end = time()
     elapsed_time = utils.humanize_time(end - start)
     print("Elapsed time vlad {0}.".format(elapsed_time))
-    np.savetxt("vlad128.csv",vlad_matrix,delimiter=",")
+    np.savetxt("vlad64.csv",vlad_matrix,delimiter=",")
+
+    #k = 256
+    clusters = np.loadtxt("clusters256.csv", delimiter=",")
+    vlad = Vlad(clusters, 64)
+    vlad_matrix = None
+    i = 0
+    start = time()
+    for image_path in files_for_codebook:
+        print(str(i) +  "/" + str(len(files_for_codebook)))
+        descriptors = train.get_descriptor_from_image_path(image_path)
+
+        vlad_imagen = vlad.get_image_vlad(descriptors)
+        if vlad_matrix is None:
+            vlad_matrix = vlad_imagen
+        else:
+            vlad_matrix = np.vstack((vlad_matrix,vlad_imagen))
+        i += 1
+    end = time()
+    elapsed_time = utils.humanize_time(end - start)
+    print("Elapsed time vlad {0}.".format(elapsed_time))
+    np.savetxt("vlad256.csv",vlad_matrix,delimiter=",")
 
 
 
@@ -93,6 +115,8 @@ def main():
     #---------------------------------------------------------------------------
 
     # Hacer queries
+
+
 
 if __name__ == '__main__':
 	main()

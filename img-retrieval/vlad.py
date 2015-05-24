@@ -1,16 +1,18 @@
 __author__ = 'lucas'
 
 import numpy as np
+from scipy.cluster.vq import vq
+
 
 class Vlad:
 
 
-    def __init__(self, clusters_centers, descriptors_dimension):
+    def __init__(self, clusters_centers):
         self.clusters_centers = clusters_centers
         self.n_clusters = clusters_centers.shape[0]
         self.descriptors_dimension = clusters_centers.shape[1]
 
-    def get_image_vlad(self, descriptors):
+    def get_image_vlad_matricial(self, descriptors):
         dimension = descriptors.shape[1]
         if dimension != self.descriptors_dimension:
             raise ValueError("La dimension de los descriptores no calza con la dimension inicializada")
@@ -44,6 +46,16 @@ class Vlad:
         flat_vlad = vlad_matrix.reshape((self.descriptors_dimension*self.n_clusters,))
         return normalize(flat_vlad)
 
+    def get_image_vlad(self, descriptors):
+        binary_nn, distances = vq(descriptors,self.clusters_centers)
+        vlad = np.zeros((self.n_clusters,self.descriptors_dimension))
+        for i in range(len(descriptors)):
+            descriptor = descriptors[i]
+            nearest_cluster_index = binary_nn[i]
+            nearest_cluster = self.clusters_centers[nearest_cluster_index]
+            vlad[nearest_cluster_index] += descriptor - nearest_cluster
+        flat_vlad = vlad.reshape((self.descriptors_dimension*self.n_clusters,))
+        return normalize(flat_vlad)
 
 
 def normalize(array):
