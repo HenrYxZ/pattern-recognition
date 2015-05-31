@@ -7,6 +7,7 @@ img-retrieval/groundtruth/
 img-retrieval/des_*
 img-retrieval/vlad*
 vlad*
+animal-classification/dataset/
 
 
 # IDEs
@@ -14,6 +15,7 @@ vlad*
 
 # Automatically generated files
 digits/means.csv
+*Thumbs.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
