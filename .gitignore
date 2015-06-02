@@ -8,7 +8,7 @@ img-retrieval/des_*
 img-retrieval/vlad*
 vlad*
 animal-classification/dataset/
-
+*.obj
 
 # IDEs
 *.idea/

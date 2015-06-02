@@ -1,0 +1,2 @@
+Training len = 1126
+Testing len = 562

@@ -2,9 +2,9 @@ import numpy.random as nprnd
 
 def random_split(l, sample_size):
 	sample_indices = nprnd.choice(len(l), size=sample_size, replace=False)
-	#print (len(sample_indices))
+	# print (len(sample_indices))
 	sample_indices.sort()
-	print("sample_indices = {0}".format(sample_indices))
+	# print("sample_indices = {0}".format(sample_indices))
 	other_part = []
 	sample_part = []
 	indices_counter = 0
@@ -19,3 +19,11 @@ def random_split(l, sample_size):
 		else:
 			other_part.append(current_elem)
 	return other_part, sample_part
+
+def humanize_time(secs):
+	'''
+	Extracted from http://testingreflections.com/node/6534
+	'''
+	mins, secs = divmod(secs, 60)
+	hours, mins = divmod(mins, 60)
+	return '%02d:%02d:%02d' % (hours, mins, secs)
