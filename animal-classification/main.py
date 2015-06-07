@@ -29,10 +29,8 @@ def main():
 		)
 		store_descriptors(class_files, class_name)
 	end = time.time()
-	print("Elapsed time processing {0}".format(
-			utils.humanize_time(end - start)
-		)
-	)
+	s = "Elapsed time processing {0}".format(utils.humanize_time(end - start))
+	print(s)
 
 
 def store_descriptors(filenames, class_name):
