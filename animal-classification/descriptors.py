@@ -1,4 +1,7 @@
 import cv2
+import glob
+import pickle as cPickle
+import numpy as np
 
 def sift(img):
 	''' Gets a list of 128 - dimensional descriptors using SIFT and DoG
@@ -25,3 +28,46 @@ def sift(img):
 	sift = cv2.SIFT()
 	kp, des = sift.detectAndCompute(img, None)
 	return kp, des
+
+def counts():
+	# THIS FUNCTION IS VERY INEFFICIENT
+	des_files = glob.glob("train/*")
+	# Counts is a list with the number of descriptors for each class and the
+	# last element is the total number of descriptors.
+	counts = [[] for i in range(len(des_files) + 1)]
+	for des_f in des_files:
+		des = pickle.load(open(des_f, "rb"))
+		counts[-1] += len(des)
+	return counts
+
+def random_sample(counts):
+	sample_size = 100000
+	sample_indices = np.random.choice(n, sample_size, replace=False)
+	sample_indices.sort()
+	des_files = glob.glob("train/*")
+	counter = 0
+	sample = []
+	# This is the current descriptors list of a class
+	current_des = None
+	for sample_index in sample_indices:
+		if sample_index < counts[counter]:
+			if current_des is None:
+				current_des = pickle.load(open(des_files[counter], "rb"))
+		else:
+			counter += 1
+			current_des = pickle.load(open(des_files[counter], "rb"))
+		previous_classes_len = 0
+		for i in range(len(counter) - 1):
+			previous_classes_len += counter[i]
+		# The index for the descriptor in the current class (sum the lengths
+		# of the previous classes)
+		current_class_idx = sample_index - previous_classes_len
+		sample.append(current_des[current_class_idx])
+	return np.array(sample)
+
+
+
+
+
+
+
