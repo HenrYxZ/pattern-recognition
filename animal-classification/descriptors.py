@@ -1,6 +1,6 @@
 import cv2
 import glob
-import pickle as cPickle
+import cPickle as pickle
 import numpy as np
 
 def sift(img):
@@ -34,10 +34,15 @@ def counts():
 	des_files = glob.glob("train/*")
 	# Counts is a list with the number of descriptors for each class and the
 	# last element is the total number of descriptors.
-	counts = [[] for i in range(len(des_files) + 1)]
+	counts = []
+	total = 0
 	for des_f in des_files:
+		print("reading file {0}".format(des_f))
 		des = pickle.load(open(des_f, "rb"))
-		counts[-1] += len(des)
+		print("Got descriptors of shape {0}".format(des.shape))
+		total += len(des)
+		counts.append(len(des))
+	counts.append(total)
 	return counts
 
 def random_sample(counts):
