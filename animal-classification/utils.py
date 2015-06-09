@@ -1,4 +1,5 @@
 import numpy.random as nprnd
+import numpy as np
 
 def random_split(l, sample_size):
 	sample_indices = nprnd.choice(len(l), size=sample_size, replace=False)
@@ -19,6 +20,21 @@ def random_split(l, sample_size):
 		else:
 			other_part.append(current_elem)
 	return other_part, sample_part
+
+def random_sample(l, sample_size):
+	sample_indices = nprnd.choice(len(l), size=sample_size, replace=False)
+	sample_indices.sort()
+	return [l[index] for index in sample_indices]
+
+def min_dist(query_point, points):
+	min_dist = float("inf")
+	for i in range(len(points)):
+		p = points[i]
+		diff_vec = query_point - p
+		dist = np.dot(diff_vec, diff_vec)
+		if dist < min_dist:
+			min_dist = dist
+	return min_dist
 
 def humanize_time(secs):
 	'''
