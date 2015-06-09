@@ -64,18 +64,24 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
 
 
 def main():
-    sample = ''
+    sample = descriptors.random_sample(100000)
+    print("sample obtenido")
+    # print(sample)
+    # print(sample.shape)
     k = 64
     #clustering
     print("Haciendo clustering...")
     codebook = generate_codebook(k, sample)
     np.savetxt("codebook60",codebook,delimiter=',')
-    dataset = Dataset()
+    dataset = pickle.load('dataset.obj', "rb")
     #train
     print("Entrenando...")
     svm = svm_train(codebook, dataset.get_train_set())
     #test
     print("Testeando...")
     svm_test(svm, codebook, dataset.get_test_set())
+
+if __name__ == "__main__":
+    main()
 
 
