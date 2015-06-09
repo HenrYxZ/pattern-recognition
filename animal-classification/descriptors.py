@@ -86,6 +86,22 @@ def get_descriptor(absolute_index, counts):
     des = pickle.load(open(des_files[file_index], "rb"))
     return des[relative_index, :]
 
+def get_clusters(k, sample):
+	''' Calculates the k clusters centers which are going to be the codewords
+	for our codebook. It only uses a random sample of 100k of the descriptors
+	and applies the k-means clustering algorithm to them.
+
+	Args:
+		k (int): The number of clusters.
+		sample (numpy matrix of float32): The 100k descriptors sample.
+
+	Returns:
+		list of floats array: Each array is a cluster mean vector (D = 128).
+	'''
+	# Clusterizar
+	kmeans = KMeans(n_clusters=k)
+	kmeans.fit(sample)
+	return kmeans.cluster_centers_
 
 
 # def random_sample(counts):
