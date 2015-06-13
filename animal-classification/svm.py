@@ -49,7 +49,7 @@ def svm_optimize(X, y):
         for j in range(-10,11):
             c_value = 2**i
             gamma_value = 2**j
-            clf = svm.SVC(C=c_value, gamma=gamma_value)
+            clf = SVC(C=c_value, gamma=gamma_value)
             scores = cross_validation.cross_val_score(clf, X, y, cv=5)
             accuracy = scores.mean()
             if accuracy > best_accuracy:
