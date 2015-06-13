@@ -24,7 +24,7 @@ def process_dataset(codebook, set_paths):
     i = 0
     for class_paths in set_paths:
         for img_path in class_paths:
-            image_descriptors = descriptors.sift(cv2.imread(img_path))
+            keypoints, image_descriptors = descriptors.sift(cv2.imread(img_path.replace('\\','/')))
             image_vlad = vlad.get_image_vlad(image_descriptors)
             if X == None:
                 X = image_vlad
