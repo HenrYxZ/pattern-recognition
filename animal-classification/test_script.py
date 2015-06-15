@@ -1,11 +1,12 @@
 import descriptors
 import cPickle as pickle
 import dataset
-import classifiers
+import knn
 import time
 import utils
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import spatial
 
 # Testing counts
 def test_counts():
@@ -22,20 +23,20 @@ def test_sample():
 
 # Testing knn
 def test_knn():
-	# dataset = pickle.load(open("dataset.obj", "rb"))
-	# start = time.time()
-	# predictions = classifiers.knn(dataset)
-	# end = time.time()
-	# elapsed_time = utils.humanize_time(end - start)
-	# print("Elapsed time using knn {0}...".format(elapsed_time))
-	# print("predictions 5x10 = {0}".format(predictions[:][:10]))
-	predictions = [
-		[1, 1, 0, 2, 4, 3, 2, 0, 2, 4, 0, 3, 2, 1, 1],
-		[1, 2, 4, 2, 1, 0, 4, 1, 3, 2, 2, 2, 1, 2, 1],
-		[2, 3, 4, 2, 2, 0, 2, 0, 3, 3, 1, 2, 2, 2, 3],
- 		[0, 1, 3, 3, 3, 3, 1, 3, 3, 3, 2, 2, 3, 0, 1],
- 		[3, 0, 2, 1, 4, 2, 1, 0, 2, 4, 1, 1, 4, 2, 3]
- 	]
+	dataset = pickle.load(open("dataset.obj", "rb"))
+	start = time.time()
+	predictions = classifiers.knn(dataset)
+	end = time.time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time using knn {0}...".format(elapsed_time))
+	print("predictions 5x10 = {0}".format(predictions[:][:10]))
+	# predictions = [
+	# 	[1, 1, 0, 2, 4, 3, 2, 0, 2, 4, 0, 3, 2, 1, 1],
+	# 	[1, 2, 4, 2, 1, 0, 4, 1, 3, 2, 2, 2, 1, 2, 1],
+	# 	[2, 3, 4, 2, 2, 0, 2, 0, 3, 3, 1, 2, 2, 2, 3],
+ # 		[0, 1, 3, 3, 3, 3, 1, 3, 3, 3, 2, 2, 3, 0, 1],
+ # 		[3, 0, 2, 1, 4, 2, 1, 0, 2, 4, 1, 1, 4, 2, 3]
+ # 	]
 	hist = np.zeros((5, 5), dtype=np.uint32)
 	for i in range(len(predictions)):
 		for j in range(len(predictions[i])):
@@ -53,6 +54,13 @@ def test_knn():
 	plt.colorbar()
 	plt.show()
 
+def test_kdtree():
+	values = np.array([[1.21,2.3], [3.63, 4.89], [60.21, 89.01], [0.21, 0.1]])
+	tree = spatial.KDTree(values)
+	print("tree data=\n{0}".format(tree.data))
+	test = np.array([[1.1, 1.1], [100.2, 90.3], [0.1, 0.03], [5.2, 5.2]])
+	nn = tree.query(test)
+	print("nn = \n{0}".format(nn))
 
 if __name__ == '__main__':
-	test_knn()
+	test_kdtree()

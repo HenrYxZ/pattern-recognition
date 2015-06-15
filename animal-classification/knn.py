@@ -4,6 +4,7 @@ import cv2
 import glob
 import utils
 import scipy.io as sio
+from scipy import spatial
 
 def knn(dataset):
 	# n_classes = len(dataset.get_classes())
@@ -12,8 +13,8 @@ def knn(dataset):
 	predictions = []
 	counter = 0
 
-	print("Getting sample of the descriptors for classes")
-	classes_sample = []
+	print("Getting sample of the descriptors for classes in their KD-trees")
+	classes_trees = []
 	for c in range(n_classes):
 		fname = des_files[c]
 		print("fname = {0}".format(fname))
@@ -22,10 +23,13 @@ def knn(dataset):
 
 		sample_size = 1000
 		current_sample = utils.random_sample(class_des, sample_size)
+		tree = spatial.KDTree(current_sample)
+		classes_trees.append(tree)
+		# cleaning this variable
 		class_des = None
-		classes_sample.append(current_sample)
 
 	for test_files in dataset.get_test_set():
+		# Using only the first n_files objects of the test set for each class
 		n_files = 15
 		# TESTING! #
 		if counter == n_classes:
@@ -61,8 +65,8 @@ def knn(dataset):
 			for img_index in range(n_files):
 				des = test_des_list[img_index]
 				print("Getting dist for img index = {0}".format(img_index))
-				class_des = classes_sample[c]
-				distances[img_index][c] = dist_nn_class(des, class_des)
+				distances, ids = classes_trees[c].query()
+				distances[img_index][c] = sum(distances)
 		# for img_index in range(len(test_files)):
 		for img_index in range(n_files):
 			predictions[-1].append(np.argmin(distances[img_index]))
