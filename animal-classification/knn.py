@@ -30,7 +30,7 @@ def knn(dataset):
 			path = folder[i]
 			img = cv2.imread(path)
 			kp, des = descriptors.sift(img)
-			if class_des == None:
+			if class_des is None:
 				class_des = np.array(des, dtype=np.uint16)
 			else:
 				class_des = np.vstack(
