@@ -44,7 +44,8 @@ def knn(dataset):
 				)
 			)
 			fname = test_files[i]
-			des = sio.loadmat(fname)
+			data = sio.loadmat(fname)
+			des = data["stored"]
 			# Find the nearest class 
 			for c in range(n_classes):
 				s = "Getting dist for img index = {0} to class {1}".format(
