@@ -73,4 +73,4 @@ def test_store_descriptors():
 	print(s)
 
 if __name__ == '__main__':
-	test_store_descriptors()
+	test_knn()
