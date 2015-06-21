@@ -7,6 +7,7 @@ import utils
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import spatial
+import main
 
 # Testing counts
 def test_counts():
@@ -25,11 +26,11 @@ def test_sample():
 def test_knn():
 	dataset = pickle.load(open("dataset.obj", "rb"))
 	start = time.time()
-	predictions = classifiers.knn(dataset)
+	predictions = knn.knn(dataset)
 	end = time.time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time using knn {0}...".format(elapsed_time))
-	print("predictions 5x10 = {0}".format(predictions[:][:10]))
+	print("predictions = \n{0}".format(predictions[:][:10]))
 	# predictions = [
 	# 	[1, 1, 0, 2, 4, 3, 2, 0, 2, 4, 0, 3, 2, 1, 1],
 	# 	[1, 2, 4, 2, 1, 0, 4, 1, 3, 2, 2, 2, 1, 2, 1],
@@ -58,9 +59,18 @@ def test_kdtree():
 	values = np.array([[1.21,2.3], [3.63, 4.89], [60.21, 89.01], [0.21, 0.1]])
 	tree = spatial.KDTree(values)
 	print("tree data=\n{0}".format(tree.data))
+	print("len tree data = {0}".format(len(tree.data)))
 	test = np.array([[1.1, 1.1], [100.2, 90.3], [0.1, 0.03], [5.2, 5.2]])
 	nn = tree.query(test)
 	print("nn = \n{0}".format(nn))
 
+def test_store_descriptors():
+	start = time.time()
+	dataset = pickle.load(open("dataset.obj", "rb"))
+	main.store_test_des(dataset)
+	end = time.time()
+	s = "Elapsed time processing {0}".format(utils.humanize_time(end - start))
+	print(s)
+
 if __name__ == '__main__':
-	test_kdtree()
+	test_store_descriptors()

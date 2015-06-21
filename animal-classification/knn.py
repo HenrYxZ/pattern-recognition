@@ -5,16 +5,69 @@ import glob
 import utils
 import scipy.io as sio
 from scipy import spatial
+import time
 
 def knn(dataset):
+	n_classes = len(dataset.get_classes())
+	des_files = glob.glob("train/*.mat")
+
+	# Read training descriptors
+	print("Getting sample of the descriptors for classes")
+	classes_sample = []
+	for c in range(n_classes):
+		fname = des_files[c]
+		print("fname = {0}".format(fname))
+		data = sio.loadmat(fname)
+		class_des = data["stored"]
+
+		sample_size = 300
+		current_sample = utils.random_sample(class_des, sample_size)
+		class_des = None
+		classes_sample.append(current_sample)
+
+	# Read testing descriptors
+	test_folders = glob.glob("test/*")
+	predictions = []
+	counter = 0
+	for folder in test_folders:
+		print("Starting to predict the test set of class {0}.".format(counter))
+		predictions.append([])
+		# The i-th element of this list has the descriptors for the i-th image;
+		# all the images are in the same class-folder
+		test_files = glob.glob(folder + "/*.mat")
+		for i in range(len(test_files)):
+			distances = np.zeros(n_classes)
+			percentage = (i * 100) / len(test_files)
+			print(
+				"Loading SIFT from file {0} of {1} ({2}%) c={3} ...".format(
+					i, len(test_files), percentage, counter
+				)
+			)
+			fname = test_files[i]
+			des = sio.loadmat(fname)
+			# Find the nearest class 
+			for c in range(n_classes):
+				s = "Getting dist for img index = {0} to class {1}".format(
+					i, c
+				)
+				print(s)
+				class_des = classes_sample[c]
+				distances[img_index][c] = dist_nn_class(des, class_des)
+			predictions[-1].append(np.argmin(distances[img_index]))
+		counter += 1
+	return predictions
+
+def knn_kdtree(dataset):
 	# n_classes = len(dataset.get_classes())
 	n_classes = 5
 	des_files = glob.glob("train/*.mat")
 	predictions = []
 	counter = 0
 
+	# Get KDTrees with the descriptors of the training set
 	print("Getting sample of the descriptors for classes in their KD-trees")
 	classes_trees = []
+	start = time.time()
 	for c in range(n_classes):
 		fname = des_files[c]
 		print("fname = {0}".format(fname))
@@ -27,6 +80,9 @@ def knn(dataset):
 		classes_trees.append(tree)
 		# cleaning this variable
 		class_des = None
+	end = time.time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time building KDTrees {0}".format(elapsed_time))
 
 	for test_files in dataset.get_test_set():
 		# Using only the first n_files objects of the test set for each class
@@ -65,8 +121,14 @@ def knn(dataset):
 			for img_index in range(n_files):
 				des = test_des_list[img_index]
 				print("Getting dist for img index = {0}".format(img_index))
-				distances, ids = classes_trees[c].query()
-				distances[img_index][c] = sum(distances)
+				start = time.time()
+				current_dists, ids = classes_trees[c].query(des)
+				distances[img_index][c] = sum(current_dists)
+				end = time.time()
+				s = "Seconds getting distances {0} for {1} descriptors".format(
+						(end - start), len(des) 
+					)
+				print(s)
 		# for img_index in range(len(test_files)):
 		for img_index in range(n_files):
 			predictions[-1].append(np.argmin(distances[img_index]))
