@@ -45,20 +45,25 @@ def svm_optimize(X, y):
     best_j = -10
     best_svm = None
     best_accuracy = 0
-    for i in range(-10,11):
-        for j in range(-10,11):
+    for i in range(-1,1):
+        for j in range(-1,1):
             c_value = 2**i
             gamma_value = 2**j
             clf = SVC(C=c_value, gamma=gamma_value)
             scores = cross_validation.cross_val_score(clf, X, y, cv=5)
             accuracy = scores.mean()
+            print("Parameter optimization:")
+            print("C = 2^{0}".format(i))
+            print("gamma = 2^{0}".format(j))
+            print("Accurracy = {0}".format(accuracy))
             if accuracy > best_accuracy:
                 best_i = i
                 best_j = j
                 best_svm = clf
-    print("Parameter optimization:")
-    print("C = 2^{0}".format(best_i))
-    print("gamma = 2^{0}".format(best_j))
+    print("Optimization finished")
+    print("Best values:")
+    print("Best C = 2^{0}".format(best_i))
+    print(" Best gamma = 2^{0}".format(best_j))
     print("Accurracy = {0}".format(best_accuracy))
     return best_svm
 
