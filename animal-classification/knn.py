@@ -8,24 +8,45 @@ from scipy import spatial
 import time
 
 def knn(dataset):
+	start = time.time()
 	n_classes = len(dataset.get_classes())
-	des_files = glob.glob("train/*.mat")
-
+	# des_files = glob.glob("train/*.mat")
+	train_set = dataset.get_train_set()
 	# Read training descriptors
 	print("Getting sample of the descriptors for classes")
 	classes_sample = []
 	for c in range(n_classes):
-		fname = des_files[c]
-		print("fname = {0}".format(fname))
-		data = sio.loadmat(fname)
-		class_des = data["stored"]
-
+		folder = train_set[c]
+		print("Reading class number {0}".format(c))
+		class_des = None
+		step = (len(folder) * 5) / 100
+		for i in range(len(folder)):
+			if i % step == 0:
+				percentage = (i * 100) / len(folder)
+				print("Getting SIFT from image {0} of {1}({2}%) ...".format(
+						i, len(folder), percentage
+					)
+				)
+			path = folder[i]
+			img = cv2.imread(path)
+			kp, des = descriptors.sift(img)
+			if class_des == None:
+				class_des = np.array(des, dtype=np.uint16)
+			else:
+				class_des = np.vstack(
+					(class_des, np.array(des, dtype=np.uint16))
+				)
 		sample_size = 300
 		current_sample = utils.random_sample(class_des, sample_size)
-		class_des = None
+		# class_des = None
 		classes_sample.append(current_sample)
 
+	end = time.time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time getting training descriptors {0}".format(elapsed_time))
+
 	# Read testing descriptors
+	start = time.time()
 	test_folders = glob.glob("test/*")
 	predictions = []
 	counter = 0
@@ -56,6 +77,9 @@ def knn(dataset):
 				distances[img_index][c] = dist_nn_class(des, class_des)
 			predictions[-1].append(np.argmin(distances[img_index]))
 		counter += 1
+	end = time.time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time testing with KNN {0}".format(elapsed_time))
 	return predictions
 
 def knn_kdtree(dataset):
