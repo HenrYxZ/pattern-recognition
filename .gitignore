@@ -6,7 +6,6 @@ img-retrieval/oxbuild-images/
 img-retrieval/groundtruth/
 img-retrieval/des_*
 img-retrieval/vlad*
-vlad*
 animal-classification/dataset/
 train/
 
