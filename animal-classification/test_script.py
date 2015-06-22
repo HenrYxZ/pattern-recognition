@@ -25,28 +25,31 @@ def test_sample():
 # Testing knn
 def test_knn():
 	dataset = pickle.load(open("dataset.obj", "rb"))
+	n_classes = len(dataset.get_classes())
 	start = time.time()
 	predictions = knn.knn(dataset)
 	end = time.time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time using knn {0}...".format(elapsed_time))
-	print("predictions = \n{0}".format(predictions[:][:10]))
+	print("predictions = \n{0}".format(predictions))
+	utils.write_list(predictions, "knn-predictions.txt")
 	# predictions = [
 	# 	[1, 1, 0, 2, 4, 3, 2, 0, 2, 4, 0, 3, 2, 1, 1],
 	# 	[1, 2, 4, 2, 1, 0, 4, 1, 3, 2, 2, 2, 1, 2, 1],
 	# 	[2, 3, 4, 2, 2, 0, 2, 0, 3, 3, 1, 2, 2, 2, 3],
- # 		[0, 1, 3, 3, 3, 3, 1, 3, 3, 3, 2, 2, 3, 0, 1],
- # 		[3, 0, 2, 1, 4, 2, 1, 0, 2, 4, 1, 1, 4, 2, 3]
- # 	]
-	hist = np.zeros((5, 5), dtype=np.uint32)
+ 	#	[0, 1, 3, 3, 3, 3, 1, 3, 3, 3, 2, 2, 3, 0, 1],
+ 	# 	[3, 0, 2, 1, 4, 2, 1, 0, 2, 4, 1, 1, 4, 2, 3]
+ 	# ]
+	hist = np.zeros((n_classes, n_classes), dtype=np.uint16)
 	for i in range(len(predictions)):
 		for j in range(len(predictions[i])):
 			c = predictions[i][j]
 			hist[i][c] += 1
 	print("hist = {0}".format(hist))
-	confusion_matrix = hist / 15.0
+	np.savetxt("knn-hist.csv", hist, fmt="%i", delimiter=",")
+	confusion_matrix = hist / 25.0
 	print("conf mat = \n{0}".format(confusion_matrix))
-	values = [confusion_matrix[i][i] for i in range(5)]
+	values = [confusion_matrix[i][i] for i in range(n_classes)]
 	precision = np.average(values)
 	print("precision = {0}".format(precision))
 

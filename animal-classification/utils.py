@@ -43,3 +43,8 @@ def humanize_time(secs):
 	mins, secs = divmod(secs, 60)
 	hours, mins = divmod(mins, 60)
 	return '%02d:%02d:%02d' % (hours, mins, secs)
+
+def write_list(l, path):
+    with open(path, "w") as f:
+        for elem in l:
+            f.write("{0}\n".format(elem))
