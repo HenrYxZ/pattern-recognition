@@ -8,6 +8,7 @@ img-retrieval/des_*
 img-retrieval/vlad*
 animal-classification/dataset/
 train/
+test/
 
 # IDEs
 *.idea/
