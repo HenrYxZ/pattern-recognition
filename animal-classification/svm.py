@@ -48,7 +48,7 @@ def svm_optimize(X, y):
     best_svm = None
     best_accuracy = 0
     for i in [-10,-1,0,1,-10]:
-        for j in range[-10,-1,0,1,10]:
+        for j in [-10,-1,0,1,10]:
             c_value = 2**i
             gamma_value = 2**j
             clf = SVC(C=c_value, gamma=gamma_value)
