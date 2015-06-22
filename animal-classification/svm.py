@@ -36,7 +36,9 @@ def process_dataset(codebook, set_paths):
 
 def svm_train(codebook, training_set_paths):
     X, y = process_dataset(codebook, training_set_paths)
+    start = time.time()
     svm = svm_optimize(X,y)
+    svm.fit(X, y)
     return svm
 
 
@@ -45,8 +47,8 @@ def svm_optimize(X, y):
     best_j = -10
     best_svm = None
     best_accuracy = 0
-    for i in range(-1,1):
-        for j in range(-1,1):
+    for i in [-10,-1,0,1,-10]:
+        for j in range[-10,-1,0,1,10]:
             c_value = 2**i
             gamma_value = 2**j
             clf = SVC(C=c_value, gamma=gamma_value)
@@ -60,6 +62,7 @@ def svm_optimize(X, y):
                 best_i = i
                 best_j = j
                 best_svm = clf
+                best_accuracy = accuracy
     print("Optimization finished")
     print("Best values:")
     print("Best C = 2^{0}".format(best_i))
