@@ -45,7 +45,7 @@ def test_knn():
 		for j in range(len(predictions[i])):
 			c = predictions[i][j]
 			hist[i][c] += 1
-	print("hist = {0}".format(hist))
+	print("hist = \n{0}".format(hist))
 	np.savetxt("knn-hist.csv", hist, fmt="%i", delimiter=",")
 	confusion_matrix = hist / 25.0
 	print("conf mat = \n{0}".format(confusion_matrix))
