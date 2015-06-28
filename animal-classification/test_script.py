@@ -32,7 +32,7 @@ def test_knn():
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time using knn {0}...".format(elapsed_time))
 	print("predictions = \n{0}".format(predictions))
-	utils.write_list(predictions, "knn-predictions.txt")
+	utils.write_list(predictions, "results/knn-predictions.txt")
 	# predictions = [
 	# 	[1, 1, 0, 2, 4, 3, 2, 0, 2, 4, 0, 3, 2, 1, 1],
 	# 	[1, 2, 4, 2, 1, 0, 4, 1, 3, 2, 2, 2, 1, 2, 1],
@@ -46,7 +46,7 @@ def test_knn():
 			c = predictions[i][j]
 			hist[i][c] += 1
 	print("hist = \n{0}".format(hist))
-	np.savetxt("knn-hist.csv", hist, fmt="%i", delimiter=",")
+	np.savetxt("results/knn-hist.csv", hist, fmt="%i", delimiter=",")
 	confusion_matrix = hist / 25.0
 	print("conf mat = \n{0}".format(confusion_matrix))
 	values = [confusion_matrix[i][i] for i in range(n_classes)]
