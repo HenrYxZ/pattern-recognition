@@ -38,3 +38,30 @@ class Dataset:
 		if len(self.classes) == 0:
 			self.generate_sets()
 		return self.classes
+
+	def store_listfile(self):
+		''' Used for creating files in the format filelist used in Caffe for
+		converting an imageset. (caffe/tools/convert_imageset.cpp)
+		'''
+		train_file = open("train_file.txt", "w")
+		test_file = open("test_file.txt", "w")
+		self.get_train_set()
+		self.get_test_set()
+		for class_id in range(len(self.classes)):
+			current_train = self.train_set[class_id]
+			for filename in current_train:
+				path = filename.replace("\\", "/")
+				idx = path.index("/")
+				path = path[(idx + 1):]
+				train_file.write("{0} {1}\n".format(path, class_id))
+			current_test = self.test_set[class_id]
+			for filename in current_test:
+				path = filename.replace("\\", "/")
+				idx = path.index("/")
+				path = path[(idx + 1):]
+				test_file.write("{0} {1}\n".format(path, class_id))
+		train_file.close()
+		test_file.close()
+
+
+

@@ -75,5 +75,9 @@ def test_store_descriptors():
 	s = "Elapsed time processing {0}".format(utils.humanize_time(end - start))
 	print(s)
 
+def test_dataset_listfile():
+	dataset = pickle.load(open("dataset.obj", "rb"))
+	dataset.store_listfile()
+
 if __name__ == '__main__':
-	test_knn()
+	test_dataset_listfile()
