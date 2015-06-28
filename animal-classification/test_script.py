@@ -8,6 +8,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import spatial
 import main
+import cv2
+
+def test_sift():
+	opt = input(
+		"Choose an option:\n"\
+		" [0] Write the image in this folder\n"\
+		" [1] Show image\n"
+	)
+	WRITE = (opt == 0)
+	dataset = pickle.load(open("dataset.obj", "rb"))
+	img_path = dataset.get_train_set()[3][3]
+	first_img = cv2.imread(img_path)
+	kp, des = descriptors.sift(first_img)
+	img = cv2.drawKeypoints(first_img, kp)
+	if WRITE:
+		cv2.imwrite("sift.jpg", img)
+	else:
+		cv2.imshow("Keypoints", img)
+		cv2.waitKey()
 
 # Testing counts
 def test_counts():
@@ -80,4 +99,4 @@ def test_dataset_listfile():
 	dataset.store_listfile()
 
 if __name__ == '__main__':
-	test_dataset_listfile()
+	test_sift()
