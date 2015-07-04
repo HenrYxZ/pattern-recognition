@@ -1,14 +1,19 @@
-import descriptors
+# EXTERNAL MODULES
 import cPickle as pickle
-import dataset
-import knn
 import time
-import utils
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import spatial
-import main
 import cv2
+import scipy.io as sio
+
+# LOCAL MODULES
+import wtahash as wh
+import main
+import utils
+import dataset
+import descriptors
+import knn
 
 def test_sift():
 	opt = input(
@@ -16,9 +21,10 @@ def test_sift():
 		" [0] Write the image in this folder\n"\
 		" [1] Show image\n"
 	)
+	n = input("Enter the image number to use.\n")
 	WRITE = (opt == 0)
 	dataset = pickle.load(open("dataset.obj", "rb"))
-	img_path = dataset.get_train_set()[3][3]
+	img_path = dataset.get_train_set()[8][n]
 	first_img = cv2.imread(img_path)
 	kp, des = descriptors.sift(first_img)
 	img = cv2.drawKeypoints(first_img, kp)
@@ -98,5 +104,37 @@ def test_dataset_listfile():
 	dataset = pickle.load(open("dataset.obj", "rb"))
 	dataset.store_listfile()
 
+def test_conf_mat():
+	hist = np.loadtxt("results/knn-hist.csv", delimiter=",")
+	precs = hist / 25.0
+	values = [precs[i][i] for i in range(len(precs))]
+	accuracy = np.average(values)
+	print("accuracy = {0}".format(accuracy))
+
+	plt.matshow(hist)
+	plt.title('Confusion matrix')
+	plt.colorbar()
+	plt.show()
+
+def test_create_hash():
+	n = 32
+	w = 2
+	k = 16
+	train_file = sio.loadmat("train/des_bear.mat")
+	train_data = train_file["stored"]
+	print ("Starting to generate hash table ...")
+	start = time.time()
+	wta_hash = wh.WTAHash(train_data, n, k, w)
+	end = time.time()
+	elapsed_time = utils.humanize_time(end - start)
+	print("Elapsed time on generation of hash table: {0}".format(elapsed_time))
+	print("Starting to store the hash ...")
+	start = time.time()
+	pickle.dump(
+		wta_hash, open("bear_hash.obj", "wb"), protocol=pickle.HIGHEST_PROTOCOL
+	)
+	end = time.time()
+	print("Elapsed time storing the hash {0} seconds".format(end - start))
+
 if __name__ == '__main__':
-	test_sift()
+	test_create_hash()

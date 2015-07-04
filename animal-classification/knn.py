@@ -7,15 +7,13 @@ import scipy.io as sio
 from scipy import spatial
 import time
 
-def knn(dataset):
-	start = time.time()
-	n_classes = len(dataset.get_classes())
+def all_classes_descriptors(dataset, opt = "sample"):
 	des_files = glob.glob("train/*.mat")
 	# train_set = dataset.get_train_set()
 	
 	# Read training descriptors
 	print("Getting sample of the descriptors for classes")
-	classes_sample = []
+	classes_des = []
 	for c in range(n_classes):
 		# class_files = train_set[c]
 		path = des_files[c]
@@ -23,15 +21,24 @@ def knn(dataset):
 		# class_des = class_descriptors(class_files)
 		class_des = class_des_from_file(path)
 		sample_size = 5000
-		current_sample = utils.random_sample(class_des, sample_size)
-		current_sample = np.array(current_sample, dtype=np.uint16)
-		print("current sample shape = {0}".format(current_sample.shape))
-		# class_des = None
-		classes_sample.append(current_sample)
+		if opt == "sample":
+			current_sample = utils.random_sample(class_des, sample_size)
+			current_sample = np.array(current_sample, dtype=np.uint16)
+			print("current sample shape = {0}".format(current_sample.shape))
+			# class_des = None
+			classes_des.append(current_sample)
+		else:
+			classes_des.append(class_des)
 
 	end = time.time()
 	elapsed_time = utils.humanize_time(end - start)
 	print("Elapsed time getting training descriptors {0}".format(elapsed_time))
+	return classes_des
+
+def knn(dataset, des_classes):
+	start = time.time()
+	n_classes = len(dataset.get_classes())
+	classes_sample = all_classes_descriptors(dataset)
 
 	# Read testing descriptors
 	start = time.time()
