@@ -26,7 +26,7 @@ def sift(img):
             else:
                 new_h = (640 * h) / w
                 new_w = 640
-            img = cv2.resize(img, (new_h, new_w))
+            img = cv2.resize(img, (new_w, new_h))
     sift = cv2.SIFT()
     kp, des = sift.detectAndCompute(img, None)
     return kp, des

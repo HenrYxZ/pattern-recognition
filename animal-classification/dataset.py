@@ -50,12 +50,14 @@ class Dataset:
 		for class_id in range(len(self.classes)):
 			current_train = self.train_set[class_id]
 			for filename in current_train:
+				# Changing path in Windows
 				path = filename.replace("\\", "/")
 				idx = path.index("/")
 				path = path[(idx + 1):]
 				train_file.write("{0} {1}\n".format(path, class_id))
 			current_test = self.test_set[class_id]
 			for filename in current_test:
+				# Changing path in Windows
 				path = filename.replace("\\", "/")
 				idx = path.index("/")
 				path = path[(idx + 1):]
